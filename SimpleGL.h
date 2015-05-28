@@ -173,7 +173,7 @@ void sglFigure::init (int argc, char *argv[]) {
 	//glutKeyboardUpFunc(KeyDownHandlerOpenGL);
 	
 	zprReferencePoint[0] = 0.0; zprReferencePoint[1] = 0.0; zprReferencePoint[2] = 0.0; 
-	//zprInit(); 
+	zprInit(); 
 	//zprSelectionFunc(drawAxes);     /* Selection mode draw function */
 	//zprPickFunc(pick);              /* Pick event client callback   */
 	
