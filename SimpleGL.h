@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <string>
+#include <X11/Xlib.h>
 #include <GL/glut.h>
 #include <pthread.h>
 
@@ -53,21 +54,25 @@ public:
 class sglFigure
 {
 public:
-    // Member variables
+    // Member variables for figure properties
     sglViewProperties properties;
-    int winID, threadID;
-    pthread_t threadStruct;
-    bool initiated, active;
+    int winID;
+    bool initiated;
     // objects
     std::unordered_set<sglObject*> objects;
-    // callback functions
-    void (*drawing_callback)(void);
+    
+    // Static variabes for all windows
+    // void (*drawing_callback)(void);
+    static bool glutInitiated;
+    static bool glutMainLoopCalled;
+    static int sglThreadID;
+    static pthread_t sglThreadStruct;
     
     // Figure/window functions
-    sglFigure (const sglViewProperties& p=sglViewProperties()) : properties(p), initiated(false), active(false) {  }
+    sglFigure (const sglViewProperties& p=sglViewProperties()) : properties(p), initiated(false) {  }
     void setProperties (sglViewProperties& p) { properties = p; }
     void init (int argc=0, char *argv[]=NULL);
-    void show (void);
+    void flush (void);
     ~sglFigure(); // destructor dereferences the global
     
     // Object functions
@@ -78,6 +83,7 @@ public:
     
     // The main function for drawing
     void draw_objects (void);
+    
 };
 
 // -------------------------------------
@@ -86,6 +92,13 @@ void _globalDisplayFunction (void);
 
 // ================================================================
 
+bool sglFigure::glutInitiated = false;
+bool sglFigure::glutMainLoopCalled = false;
+int sglFigure::sglThreadID;
+pthread_t sglFigure::sglThreadStruct;
+
+// -------------------------------------
+
 std::unordered_map <int, sglFigure*> allGlFigures;
 
 // -------------------------------------
@@ -93,6 +106,12 @@ std::unordered_map <int, sglFigure*> allGlFigures;
 // definitions
 
 void sglFigure::init (int argc, char *argv[]) {
+    if (!glutInitiated) {
+        XInitThreads();
+        glutInit(&argc, argv);
+        glutInitiated = true;
+    }
+    
     static GLfloat light_ambient[]  = { 0.0, 0.0, 0.0, 1.0 };
     static GLfloat bright_light_ambient[]  = { 1.0, 1.0, 1.0, 1.0 };
     static GLfloat light_diffuse[]  = { 0.5, 0.5, 0.5, 1.0 };
@@ -103,9 +122,6 @@ void sglFigure::init (int argc, char *argv[]) {
     static GLfloat mat_specular[]   = { 1.0, 1.0, 1.0, 1.0 };
     static GLfloat high_shininess[] = { 100.0 };
     
-    /*int argc = 0;
-    char** argv;*/
-    glutInit(&argc, argv);
 	//glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE); //glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	//glutInitWindowSize(OPENGL_WIN_SIZE, OPENGL_WIN_SIZE);
 	if (properties.alpha) {
@@ -113,8 +129,8 @@ void sglFigure::init (int argc, char *argv[]) {
         /*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);*/
         //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-        glEnable(GL_BLEND); // Add alpha blending
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glEnable(GL_BLEND); // Add alpha blending
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
     else
         glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
@@ -125,7 +141,12 @@ void sglFigure::init (int argc, char *argv[]) {
 	winID = glutCreateWindow (properties.win_name.c_str());
 	
 	allGlFigures[winID] = this;
-
+    
+    if (properties.alpha) {
+        glEnable(GL_BLEND); // Add alpha blending
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    
 	glShadeModel(GL_SMOOTH);
 	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glClearColor(1.0f,1.0f,1.0f,0.0f);
@@ -152,7 +173,7 @@ void sglFigure::init (int argc, char *argv[]) {
 	//glutKeyboardUpFunc(KeyDownHandlerOpenGL);
 	
 	zprReferencePoint[0] = 0.0; zprReferencePoint[1] = 0.0; zprReferencePoint[2] = 0.0; 
-	zprInit(); 
+	//zprInit(); 
 	//zprSelectionFunc(drawAxes);     /* Selection mode draw function */
 	//zprPickFunc(pick);              /* Pick event client callback   */
 	
@@ -191,24 +212,18 @@ void sglFigure::init (int argc, char *argv[]) {
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
 	
+	if (!glutMainLoopCalled) { // active
+        glutMainLoopCalled = true;
+        sglThreadID = pthread_create (&sglThreadStruct, NULL, 
+                                        [](void* d) -> void* { glutMainLoop(); }, 
+                                                NULL);
+    }
+	
 	// -------------
 	initiated = true;
 }
 
 // -------------------------
-
-void sglFigure::show (void) {
-    if (!initiated)
-        init();
-    
-    // Run thread
-    if (!active) {
-        active = true;
-        threadID = pthread_create (&threadStruct, NULL, 
-                                        [](void* d) -> void* { glutMainLoop(); }, 
-                                                NULL);
-    }
-}
 
 sglFigure::~sglFigure () {
     for (auto it=objects.begin(); it!=objects.end(); ++it)
@@ -236,10 +251,25 @@ void sglFigure::draw_objects (void) {
         (*it)->draw();
 }
 
+// -----------------------------
+
+void sglFigure::flush (void) {
+    int oldWinID = glutGetWindow();
+    glutSetWindow(winID);
+    glutPostRedisplay(); //glFlush();
+    glutSetWindow(oldWinID);
+}
+
 // ======================================
+
+//bool sglGlobalDisplayFunctionCalled = false;
 
 void _globalDisplayFunction (void)
 {
+    /* if (sglGlobalDisplayFunctionCalled)
+        return;
+    sglGlobalDisplayFunctionCalled = true; */
+    
     int winID = glutGetWindow();
     //printf ("Current winID=%d (mem = %x, number of objects = %d)\n", winID, allGlFigures[winID], allGlFigures[winID]->objects.size());
     
@@ -258,6 +288,8 @@ void _globalDisplayFunction (void)
         // swap buffer
         glutSwapBuffers();
     }
+    
+    // sglGlobalDisplayFunctionCalled = false;
 }
 
 #endif
