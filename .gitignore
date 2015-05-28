@@ -9,6 +9,9 @@
 !sgl_objects/
 !sgl_objects/*.h
 !sgl_objects/*.cpp
+!sgl_utils/
+!sgl_utils/*.h
+!sgl_utils/*.cpp
 !glt_zpr/
 !glt_zpr/*.h
 !glt_zpr/*.c

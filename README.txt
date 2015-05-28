@@ -25,7 +25,7 @@
 
 Basic usage:
 
-#include "../sgl.h"
+#include "sgl.h"
 // ...
 
 int main(int argc, char *argv[])
@@ -50,9 +50,20 @@ int main(int argc, char *argv[])
     // ...
 }
 
+Suggested compilation options:
+-std=gnu++11 -O3 -g -w -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext -lpthread
+
+===========================================================================
+
+Features/Objectives:
+- Simplify the OpenGL and GLUT interface to make it intuitive like MATLAB.
+- Automatic threading for OpenGL processes.
+- Allow easy creation and management of multiple windows.
+- Allow easy change of object properties.
+
 Compiling:
 - This library is template-based.
 - There is nothing to build. Simply include the file "sgl.h" in your code.
 - For compiling, you'll need to link to the GL, glut, X11 and pthread libraries.
-- See the 'example' folder for examples (sun the shell script to compile).
+- See the 'example' folder for examples (run the shell script to compile).
 
