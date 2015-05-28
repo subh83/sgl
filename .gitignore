@@ -1,0 +1,19 @@
+# Ignore everything:
+*
+
+# Except for the following:
+!/.gitignore
+!/README.txt
+!/*.h
+!/*.cpp
+!sgl_objects/
+!sgl_objects/*.h
+!sgl_objects/*.cpp
+!glt_zpr/
+!glt_zpr/*.h
+!glt_zpr/*.c
+!example/
+!example/*.h
+!example/*.cpp
+!example/*.sh
+
