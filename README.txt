@@ -1,7 +1,7 @@
 ******************************************************************************************
 *                                                                                        *
 *    Simple OpenGL                                                                       *
-*    A simplified, muti-threaded C++ wrapper to OpenGL                                   *
+*    A simplified, template-based, muti-threaded C++ wrapper to OpenGL                   *
 *    Version 0.1b                                                                        *
 *    ----------------------------------------------------------                          *
 *    Copyright (C) 2015  Subhrajit Bhattacharya                                          *
@@ -22,5 +22,6 @@
 *                                                                                        *
 ******************************************************************************************
 
-Usage: 
+Usage: This library is template-based. There is nothing to build. Simply include the file "sgl.h" in your code.
+       For compiling, you'll need to link to the GL, glut and pthread libraries.
 
