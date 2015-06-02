@@ -23,14 +23,23 @@
 *                                                                        *
 **************************************************************************
 
-Modules used (code accompanying -- see individual code file/folder):
 
-ZPR
-Zoom-pan-rotate mouse manipulation module for GLUT
-Version 0.4, October 2003
-by Nigel Stewart
-License: GNU Lesser General Public License
-Link: http://www.nigels.com/glt/gltzpr/
+Developers / contributors
+--------------------------------------------------------------------------
+  - Subhrajit Bhattacarya (maintainer): subhrajit@gmail.com
+  - 
+    [Add your name to the list above.]
+
+
+Accompanying modules (code included -- see individual code file/folder)
+--------------------------------------------------------------------------
+  - GLT-ZPR
+    Zoom-pan-rotate mouse manipulation module for GLUT
+    Version 0.4, October 2003
+    by Nigel Stewart
+    License: GNU Lesser General Public License
+    Link: http://www.nigels.com/glt/gltzpr/
+
 
 **************************************************************************
 

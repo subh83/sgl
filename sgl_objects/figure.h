@@ -7,6 +7,8 @@
 #include <X11/Xlib.h>
 #include <GL/glut.h>
 #include <pthread.h>
+#include <thread>
+#include <chrono>
 
 #include "glt_zpr/zpr.h"
 
@@ -30,6 +32,8 @@ public:
     // Properties specific to figure (non-object)
     bool initiated;
     int winID;
+    // Status defining variables
+    bool waiting_for_keypress; unsigned char pressed_key;
     
     // Static variables specific to figure
     static bool  glutInitiated;
@@ -44,6 +48,8 @@ public:
         height = 600;
         initiated = false;
         winID = -1;
+        // --
+        waiting_for_keypress = false;
     }
     
     // -------------------------
@@ -67,6 +73,8 @@ public:
     // Functions specific to figure
     void init (int argc=0, char *argv[]=NULL);
     void flush (void);
+    // --
+    unsigned char get_key (void);
 };
 
 // ===========================================
@@ -82,9 +90,9 @@ pthread_t sglFigure::sglThreadStruct;
 std::unordered_map <int, sglFigure*> allGlFigures;
 
 // ===========================================
+// Global gl unctions
 
-void _globalDisplayFunction (void)
-{
+void _globalDisplayFunction (void) {
     int winID = glutGetWindow();
     
     if (allGlFigures.find(winID) != allGlFigures.end()) {
@@ -93,13 +101,26 @@ void _globalDisplayFunction (void)
     }
 }
 
+// --------------------------
+
+void _globalKeyFunction (unsigned char key, int x, int y){
+    int winID = glutGetWindow();
+    
+    if (allGlFigures.find(winID) != allGlFigures.end()) {
+        if (allGlFigures[winID]->waiting_for_keypress) {
+            allGlFigures[winID]->waiting_for_keypress = false;
+            allGlFigures[winID]->pressed_key = key;
+        }
+    }
+}
+
 // ===========================================
 // definitions of members
 
 void sglFigure::draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-    computeProperties (parent_CP, parent_child_LP); // computes 'this_CP' (not called for figure)
+    computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
     // --
-    if ( visible() ) {
+    if ( visible(this_CP) ) {
         // Clear figure.
         std::vector<double>& c = color();
 	    glClearColor (c[0], c[1], c[2], 0.0f);
@@ -197,6 +218,7 @@ void sglFigure::init (int argc, char *argv[]) {
 	glutDisplayFunc (_globalDisplayFunction);
 	glutIdleFunc (_globalDisplayFunction);
 	//glutKeyboardUpFunc(KeyDownHandlerOpenGL);
+	glutKeyboardFunc(_globalKeyFunction);
 	
 	zprReferencePoint[0] = 0.0; zprReferencePoint[1] = 0.0; zprReferencePoint[2] = 0.0; 
 	zprInit(); 
@@ -257,6 +279,16 @@ void sglFigure::flush (void) {
     glutSetWindow (winID);
     glutPostRedisplay (); //glFlush();
     glutSetWindow (oldWinID);
+}
+
+// -------------------------------
+
+unsigned char sglFigure::get_key (void) {
+    waiting_for_keypress = true;
+    while (waiting_for_keypress) {
+        std::this_thread::sleep_for (std::chrono::milliseconds(100)); // sleep
+    }
+    return (pressed_key);
 }
 
 #endif

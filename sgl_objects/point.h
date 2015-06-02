@@ -72,7 +72,7 @@ public:
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
         computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
         // --
-        if ( visible() ) {
+        if ( visible (this_CP) ) {
             if (!sphere_quad) {
                 sphere_quad = gluNewQuadric();
             }

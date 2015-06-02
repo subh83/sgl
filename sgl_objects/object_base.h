@@ -8,10 +8,23 @@
 #include "../sgl_utils/stl_utils.h"
 
 // ==========================================================
+// Property maps
 
 class OPropertiesMap : public std::unordered_map <std::string, sgl_any> { }; // object properties
-class LPropertiesMap : public OPropertiesMap { }; // link properties
-class CPropertiesMap : public LPropertiesMap { }; // computed properties
+
+class LPropertiesMap : public OPropertiesMap { // link properties
+public:
+    LPropertiesMap () { }
+    LPropertiesMap (const OPropertiesMap& op) : OPropertiesMap (op) { } // OP to LP conversion
+};
+
+class CPropertiesMap : public LPropertiesMap { // computed properties
+public:
+    CPropertiesMap () { }
+    CPropertiesMap (const OPropertiesMap& op) : LPropertiesMap(op) { } // OP to CP conversion
+};
+
+// ==========================================================
 
 // Class without properties. Only for maintaining parent-child relationship
 class sglObjectBase
@@ -179,6 +192,8 @@ public:
     // Mix parents' and self properties
     
     void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
+        // set defaults
+        this_CP = this_OP;
         // make this a privte member? (to be use by 'draw' only)
         visible(this_CP) = visible()  &  visible(parent_CP, true)  &  visible(parent_child_LP, true);
         color(this_CP) = color();

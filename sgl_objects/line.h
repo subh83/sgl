@@ -23,12 +23,11 @@ public:
     //       - visible
     
     // object (self) properties
-    declare_OP (double, linewidth, 2.0);
-    //declare_OP (GLenum, linemode, GL_LINE_STRIP);
+    declare_OP (double, linewidth, 1.0);
     declare_OP (GLenum, linemode, (GLenum)GL_LINE_STRIP);
     
     // link (to children) properties
-    declare_LP (bool, use_vertex_color, false);
+    declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
     declare_LP (double, vertex_color_weight, -1.0); // use alpha as weight if negative
     
     // non-object properties
@@ -46,11 +45,11 @@ public:
     
     // Constructors for setting default properties
     
-    sglLine (double r=1.0, double g=0.0, double b=0.0, double a=1.0, double w=2.0) 
+    sglLine (double r=1.0, double g=0.0, double b=0.0, double a=1.0, double w=1.0) 
             : sglObject (sglMake3vec(r,g,b), a)  { linewidth() = w; }
     
     sglLine (const std::vector<double>& p1, const std::vector<double>& p2,
-                const std::vector<double>& c=sglMake3vec (1.0, 0.0, 0.0), double a=1.0, double w=2.0) 
+                const std::vector<double>& c=sglMake3vec (1.0, 0.0, 0.0), double a=1.0, double w=1.0) 
             : sglObject (c, a) {
         sglPoint* pp1 = addPoint ( sglPoint (p1) );
         sglPoint* pp2 = addPoint ( sglPoint (p2) );
@@ -65,7 +64,7 @@ public:
     // -------------------------
     // Mix parents' and self properties
     void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        // Use base class function to compute visible, color, alpha, translation (a.k.a. coords)
+        // Use base class function to compute visible, color, alpha, translation
         sglObject::computeProperties (parent_CP, parent_child_LP);
         // --
         // Other object properties computation
@@ -84,9 +83,8 @@ public:
         // set some child properties
         pp->visible() = false;
         pp->color() = color();
-        // set some link properties
-        use_vertex_color(pp) = false;
-        vertex_color_weight(pp) = -1.0;
+        // set some link properties if required
+        // ...
         // return
         return (pp);
     }
@@ -96,9 +94,8 @@ public:
         pp = addChild (pp);
         // insert in local variables
         points.push_back (pp);
-        // set some link properties
-        use_vertex_color(pp) = true;
-        vertex_color_weight(pp) = 1.0;
+        // set some link properties if required
+        // ...
         // return
         return (pp);
     }
@@ -106,7 +103,7 @@ public:
     // TODO: removePoint, insertPoint
     
     // -------------------------
-    // Functions to change link properties
+    // Functions to change link properties en-masse
     
     void use_vertex_color_all (bool use=true) {
         for (auto it=points.begin(); it!=points.end(); ++it) // iterate through the local vector storing the points
@@ -120,15 +117,16 @@ public:
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
         computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
         // --
-        if ( visible() ) {
+        if ( visible(this_CP) ) {
             glMatrixMode(GL_MODELVIEW);
-            //
+            // 
+            glLineWidth (linewidth(this_CP));
             glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
             glPushMatrix();
             glTranslated (translation()[0], translation()[1], translation()[2]); // Note: we don't use computed value since GL stacks 
 	                                                                  // will take care of that when 'glTranslated' is called for parents
 	            // Draw the line
-	            glBegin (linemode());
+	            glBegin (linemode(this_CP));
                     for (auto it=points.begin(); it!=points.end(); ++it) { // iterate through the local vector storing the points
                         if ( use_vertex_color(*it) ) {
                             double w = (vertex_color_weight(*it) < 0.0) ? (*it)->alpha() : vertex_color_weight(*it);
