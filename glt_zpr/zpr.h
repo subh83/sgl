@@ -4,6 +4,7 @@
 /*
  * Zoom-pan-rotate mouse manipulation module for GLUT
  * Version 0.4, October 2003
+ * http://www.nigels.com/glt/gltzpr/
  *
  * Nigel Stewart
  * School of Computer Science and Information Technology

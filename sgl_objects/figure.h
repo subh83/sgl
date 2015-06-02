@@ -1,8 +1,7 @@
-#ifndef _SIMPLE_GL_BASE_H
-#define _SIMPLE_GL_BASE_H
+#ifndef _SGL_FIGURE_H
+#define _SGL_FIGURE_H
 
 #include <vector>
-#include <unordered_set>
 #include <unordered_map>
 #include <string>
 #include <X11/Xlib.h>
@@ -10,102 +9,128 @@
 #include <pthread.h>
 
 #include "glt_zpr/zpr.h"
-#include "sgl_objects/object_base.h"
 
-// Properties of the OpenGL window:
+#include "../sgl_utils/stl_utils.h"
+#include "object_base.h"
 
-class sglViewProperties {
-public:
-    int width, height;
-    bool alpha;
-    std::string win_name;
-    
-    sglViewProperties() : width(600), height(600), alpha (true), win_name("") { }
-};
+// --------------------------------------------
 
-// ------------------------------
-
-/*class sglColor {
-public:
-    std::vector<double> c;
-    sglColor (double r, double g, double b);
-    sglColor (double r, double g, double b, double a);
-};*/
-
-
-// -------------------------------------
-
-// Objects 
-
-//class 
-
-/* // Sending requests to the OpenGL window
-
-struct sglRequests {
-public:
-    bool saveImage, showSurfaces, showLabels, showTrajectories;
-    std::vector<int> trajectoriesToDraw;
-    
-    sglRequests() : saveImage(false), showSurfaces(true), showTrajectories(true) { }
-}; */
-
-// ==========================================
-
-class sglFigure
+class sglFigure : public sglObject
 {
 public:
-    // Member variables for figure properties
-    sglViewProperties properties;
-    int winID;
+    // +++++++++++++++++++++++++
+    // Properties:
+    //     Members derived from 'sglObject':
+    //       - OPropertiesMap    this_OP;    // will contain all native object properties (OP)
+    //       - OPropertiesMap    this_CP;  // temporary variable (can be private)
+    
+    // non-object properties
+    std::string name;
+    double width, height;
+    // Properties specific to figure (non-object)
     bool initiated;
-    // objects
-    std::unordered_set<sglObject*> objects;
+    int winID;
     
-    // Static variabes for all windows
-    // void (*drawing_callback)(void);
-    static bool glutInitiated;
-    static bool glutMainLoopCalled;
-    static int sglThreadID;
-    static pthread_t sglThreadStruct;
+    // Static variables specific to figure
+    static bool  glutInitiated;
+    static bool  glutMainLoopCalled;
+    static int   sglThreadID;
+    static pthread_t  sglThreadStruct;
     
-    // Figure/window functions
-    sglFigure (const sglViewProperties& p=sglViewProperties()) : properties(p), initiated(false) {  }
-    void setProperties (sglViewProperties& p) { properties = p; }
+    // Constructors for setting default properties
+    sglFigure (std::string nm="<untitled>") : sglObject(sglMake3vec (1.0, 1.0, 1.0), 1.0) {
+        name = nm;
+        width = 600;
+        height = 600;
+        initiated = false;
+        winID = -1;
+    }
+    
+    // -------------------------
+    // Mix parents' and self properties
+    void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
+        sglObject::computeProperties (parent_CP, parent_child_LP);
+    }
+    
+    // +++++++++++++++++++++++++
+    // -------------------------
+    // Drawing function
+    
+    virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP);
+    
+    // +++++++++++++++++++++++++
+    // ---------------------
+    // Destructor
+    ~sglFigure ();
+    
+    // ---------------------
+    // Functions specific to figure
     void init (int argc=0, char *argv[]=NULL);
     void flush (void);
-    ~sglFigure(); // destructor dereferences the global
-    
-    // Object functions
-    //sglObject* addObject (const sglObject& obj);
-    template <class objType> objType* addObject (const objType& obj); // objType must be derived from sglObject
-    
-    void removeObject (sglObject* obj_p);
-    
-    // The main function for drawing
-    void draw_objects (void);
-    
 };
 
-// -------------------------------------
-
-void _globalDisplayFunction (void);
-
-// ================================================================
+// ===========================================
+// Variables and functions specefic to figure
 
 bool sglFigure::glutInitiated = false;
 bool sglFigure::glutMainLoopCalled = false;
 int sglFigure::sglThreadID;
 pthread_t sglFigure::sglThreadStruct;
 
-// -------------------------------------
+// ------------------------------------------
 
 std::unordered_map <int, sglFigure*> allGlFigures;
 
-// -------------------------------------
+// ===========================================
 
-// definitions
+void _globalDisplayFunction (void)
+{
+    int winID = glutGetWindow();
+    
+    if (allGlFigures.find(winID) != allGlFigures.end()) {
+        allGlFigures[winID]->draw (sglFigure::empty_CP, sglFigure::empty_LP);
+        // printf ("Drawn %d objects in window %d.\n", allGlFigures[winID]->childObjects_p.size(), winID);
+    }
+}
+
+// ===========================================
+// definitions of members
+
+void sglFigure::draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
+    computeProperties (parent_CP, parent_child_LP); // computes 'this_CP' (not called for figure)
+    // --
+    if ( visible() ) {
+        // Clear figure.
+        std::vector<double>& c = color();
+	    glClearColor (c[0], c[1], c[2], 0.0f);
+	    glClearDepth (1.0f);
+        if ( alpha() >= 0.0) {
+            glEnable (GL_BLEND); // Add alpha blending
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Draw the children
+        for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)
+            it->first->draw (this_CP, it->second);
+        // swap buffer
+        glutSwapBuffers ();
+    }
+}
+
+// -------------------------------
+
+sglFigure::~sglFigure () {
+    allGlFigures.erase (winID);
+    // ~sglObject() takes care of destroying the children
+    // TODO: Close window
+}
+
+// -------------------------------
 
 void sglFigure::init (int argc, char *argv[]) {
+    if (initiated) // nothing to initiate
+        return;
+    
     if (!glutInitiated) {
         XInitThreads();
         glutInit(&argc, argv);
@@ -124,7 +149,7 @@ void sglFigure::init (int argc, char *argv[]) {
     
 	//glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE); //glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	//glutInitWindowSize(OPENGL_WIN_SIZE, OPENGL_WIN_SIZE);
-	if (properties.alpha) {
+	if (alpha() >= 0.0) {
     	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);  //(GLUT_SINGLE|GLUT_RGBA);
         /*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);*/
@@ -135,22 +160,23 @@ void sglFigure::init (int argc, char *argv[]) {
     else
         glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
     
-    glutInitWindowSize (properties.width, properties.height);
-    if (properties.win_name == "")
-        properties.win_name = "OpenGL window " + std::to_string (allGlFigures.size());
-	winID = glutCreateWindow (properties.win_name.c_str());
+    glutInitWindowSize (width, height);
+    if (name == "<untitled>")
+        name = "OpenGL window " + std::to_string (allGlFigures.size());
+	winID = glutCreateWindow (name.c_str());
 	
 	allGlFigures[winID] = this;
     
-    if (properties.alpha) {
+    if (alpha() >= 0.0) {
         glEnable(GL_BLEND); // Add alpha blending
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
     
 	glShadeModel(GL_SMOOTH);
 	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	glClearColor(1.0f,1.0f,1.0f,0.0f);
-	glClearDepth(1.0f);
+	std::vector<double>& c = color();
+	glClearColor (c[0], c[1], c[2], 0.0f);
+	glClearDepth (1.0f);
 	
 	//glViewport(-2.0, -2.0, 4.0, 4.0);
 	glMatrixMode(GL_PROJECTION);
@@ -223,73 +249,14 @@ void sglFigure::init (int argc, char *argv[]) {
 	initiated = true;
 }
 
-// -------------------------
 
-sglFigure::~sglFigure () {
-    for (auto it=objects.begin(); it!=objects.end(); ++it)
-        delete (*it);
-    allGlFigures[winID] = NULL;
-}
-
-// -------------------------
-
-template <class objType> // objType must be derived from sglObject
-objType* sglFigure::addObject (const objType& obj) {
-    objType* new_obj = new objType (obj); // make copy
-    new_obj->figure_p = this;
-    objects.insert (new_obj); // type casting
-    return (new_obj);
-}
-
-void sglFigure::removeObject (sglObject* obj_p) {
-    objects.erase (obj_p);
-    delete obj_p;
-}
-
-void sglFigure::draw_objects (void) {
-    for (auto it=objects.begin(); it!=objects.end(); ++it)
-        (*it)->draw();
-}
-
-// -----------------------------
+// -------------------------------
 
 void sglFigure::flush (void) {
     int oldWinID = glutGetWindow();
-    glutSetWindow(winID);
-    glutPostRedisplay(); //glFlush();
-    glutSetWindow(oldWinID);
-}
-
-// ======================================
-
-//bool sglGlobalDisplayFunctionCalled = false;
-
-void _globalDisplayFunction (void)
-{
-    /* if (sglGlobalDisplayFunctionCalled)
-        return;
-    sglGlobalDisplayFunctionCalled = true; */
-    
-    int winID = glutGetWindow();
-    //printf ("Current winID=%d (mem = %x, number of objects = %d)\n", winID, allGlFigures[winID], allGlFigures[winID]->objects.size());
-    
-    if (allGlFigures[winID]) {
-        // clear
-        if (allGlFigures[winID]->properties.alpha) {
-            glEnable(GL_BLEND); // Add alpha blending
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-	    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        
-        // draw
-        allGlFigures[winID]->draw_objects();
-        // printf ("Drawn %d objects in window %d.\n", allGlFigures[winID]->objects.size(), winID);
-        
-        // swap buffer
-        glutSwapBuffers();
-    }
-    
-    // sglGlobalDisplayFunctionCalled = false;
+    glutSetWindow (winID);
+    glutPostRedisplay (); //glFlush();
+    glutSetWindow (oldWinID);
 }
 
 #endif
