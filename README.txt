@@ -2,7 +2,7 @@
 *                                                                        *
 *  Simple OpenGL (SGL)                                                   *
 *  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
-*  Version 0.2a                                                          *
+*  Version 0.2b                                                          *
 *  ----------------------------------------------------------            *
 *  Copyright (C) 2015  Subhrajit Bhattacharya                            *
 *                                                                        *

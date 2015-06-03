@@ -134,9 +134,6 @@ LPropertiesMap  sglObjectBase::empty_LP  =  LPropertiesMap();
 // ==========================================================
 
 // Macro for defining functions:
-//    - type& name (void);
-//    - type& name (PropertiesMap&);
-//    - type& name (PropertiesMap&, type&);
 
 // object properties
 #define declare_OP(type,name,default) \
@@ -180,20 +177,15 @@ public:
     // -------------------------
     // Constructors for setting default properties
     sglObject (std::vector<double> c=sglMake3vec (0.0, 0.0, 0.0), double a=1.0) {
-        //visible() = true;
         color() = c;
         alpha() = a;
-        // --
-        //translation() = sglMake3vec (0.0, 0.0, 0.0);
-        //scale() = 1.0;
     }
     
     // -------------------------
     // Mix parents' and self properties
     
     void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        // set defaults
-        // this_CP = this_OP;
+        // this_CP = this_OP; // set defaults
         // make this a privte member? (to be use by 'draw' only)
         visible(this_CP) = visible()  &  visible(parent_CP, true)  &  visible(parent_child_LP, true);
         color(this_CP) = color();

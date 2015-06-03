@@ -16,7 +16,7 @@ public:
     // Properties:
     //     Members derived from 'sglObject':
     //       - OPropertiesMap    this_OP;    // will contain all native object properties (OP)
-    //       - LPropertiesMap    this_CP;    // temporary variable (can be private)
+    //       - CPropertiesMap    this_CP;    // temporary variable (can be private)
     //    sglObject already declares following object properties (OP):
     //       - visible, color, alpha, translation, scale
     //    sglObject already declares following link properties (LP):
