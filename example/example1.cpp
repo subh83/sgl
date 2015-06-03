@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
             (*it)->color() = sglMake3vec ( 0.5*(rand_d+1.0), 0.5*(rand_d+1.0), 0.5*(rand_d+1.0)  );  // random color
         }
         myFig1.flush(); // flush the changes
-        std::this_thread::sleep_for (std::chrono::milliseconds(1000)); // sleep
+        std::this_thread::sleep_for (std::chrono::milliseconds(100)); // sleep
     }
     
     std::cout << "press any key." << std::endl; std::cin.get(); // Pause for keyboard input

@@ -5,8 +5,6 @@
     #include <boost/any.hpp>
     #define sgl_any                     boost::any
     #define sgl_any_cast(type,anyvar)   boost::any_cast< type >(anyvar)
-    
-    // #include "sgl_utils/any_type.h"
 #endif
 
 // ===============================

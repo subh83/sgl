@@ -193,7 +193,7 @@ public:
     
     void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
         // set defaults
-        this_CP = this_OP;
+        // this_CP = this_OP;
         // make this a privte member? (to be use by 'draw' only)
         visible(this_CP) = visible()  &  visible(parent_CP, true)  &  visible(parent_child_LP, true);
         color(this_CP) = color();

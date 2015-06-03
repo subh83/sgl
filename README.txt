@@ -68,11 +68,12 @@ int main(int argc, char *argv[])
     // etc...
     
     // Set property of an object
-    my_line->linewidth() = 8.0;
+    my_line->linewidth() = 3.0;
     
     // ...
     
     my_fig.flush ();  // flush all pending changes to the figure
+    my_fig.get_key();  // Pause for keystroke
     
     // ...
 }
