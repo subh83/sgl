@@ -4,6 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <algorithm>
 
 #include "../sgl.h"
 
@@ -18,7 +19,10 @@ int main(int argc, char *argv[])
     myFig1.init (); // Display the figure
     
     // -----------------------------------
-    // draw lines reprsenting the axes
+    // -----------------------------------
+    // draw lines representing the axes
+    printf("[draw lines representing the axes]\n");
+    
     sglLine* lnX = myFig1.addChild ( sglLine (-1.5,0.0,0.0, 1.5,0.0,0.0) );
     sglLine* lnY = myFig1.addChild ( sglLine (0.0,-1.5,0.0, 0.0,1.5,0.0, 0.0,1.0,0.0) ); // green
     sglLine* lnZ = myFig1.addChild ( sglLine (0.0,0.0,-1.5, 0.0,0.0,1.5) );
@@ -29,7 +33,11 @@ int main(int argc, char *argv[])
     std::cout << "press any key." << std::endl;
     myFig1.get_key(); // Pause for keyboard input on figure
     
+    // -----------------------------------
+    // -----------------------------------
     // change color of points on the lines and use those
+    printf("[change color of points on the axes lines and use those]\n");
+    
     std::vector<double> white = sglMake3vec (1.0, 1.0, 1.0);
     lnX->use_vertex_color (lnX->points[0]) = true;  // Notifies that the point color be used
     lnX->points[0]->color() = white;                // Sets the point color
@@ -42,22 +50,42 @@ int main(int argc, char *argv[])
     myFig1.get_key();
     
     // -----------------------------------
+    // -----------------------------------
     // Draw a random chain of lines
+    printf ("[draw a random chain of lines]\n");
+    
     sglLine* chain = myFig1.addChild ( sglLine (0.0,0.0,1.0, 1.0, 3.0) );  // empty line (with properties)
                                      // ^^^^      r,  g,  b,  a,  width
+    // Add 100 points to the line
     for (int a=0; a<100; ++a)
         chain->addPoint ( sglPoint (0.5*rand_d, 0.5*rand_d, 0.5*rand_d) );
+    
+    // Apply a translation (first) and a rotation (second) to this lines object
+    auto chain_translation = chain->addTransformation ( sglTranslate(0.0, 0.0, 0.0) );
+    auto chain_rotation = chain->addTransformation ( sglRotate(0.0, 0.0, 0.0, 1.0) );
+                                                    // ^^^^  angle,   x,   y,   z
     
     // Direct line to use the point colors
     chain->use_vertex_color_all();
     
-    // Randomly change the colors
+    std::cout << "press any key." << std::endl;
+    myFig1.get_key();
+    
+    // -----------------------------------
+    // -----------------------------------
+    // Animation: Randomly change the colors and constantly increment the x translation
+    printf("[animation: randomly change the colors and constantly increment the y-translation & z-rotation]\n");
+    
     while (true) {
-        for (auto it=chain->points.begin(); it!=chain->points.end(); ++it) { // iterate through the points in the line
+        // iterate through the points in the line
+        for (auto it=chain->points.begin(); it!=chain->points.end(); ++it)
             (*it)->color() = sglMake3vec ( 0.5*(rand_d+1.0), 0.5*(rand_d+1.0), 0.5*(rand_d+1.0)  );  // random color
-        }
-        myFig1.flush(); // flush the changes
-        std::this_thread::sleep_for (std::chrono::milliseconds(100)); // sleep
+        // translate the chain by 0.01 towards +z and rotate about x-axis by 1.0 degrees
+        chain_translation->y += 0.01;
+        chain_rotation->angle += 1.0;
+        // flush the changes and pause
+        myFig1.flush();
+        std::this_thread::sleep_for (std::chrono::milliseconds(100)); // 100ms
     }
     
     std::cout << "press any key." << std::endl; std::cin.get(); // Pause for keyboard input

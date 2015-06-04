@@ -1,4 +1,7 @@
 
+// Macros
+#define SINGLE_ARG(...) __VA_ARGS__
+
 // Any type
 #ifndef sgl_any
     // boost::any
@@ -12,6 +15,7 @@
 // utils
 #include "sgl_utils/stl_utils.h"
 #include "sgl_utils/gl_utils.h"
+#include "sgl_utils/gl_transformation_util.h"
 
 // objects
 #include "sgl_objects/figure.h"

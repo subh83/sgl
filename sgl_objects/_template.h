@@ -1,15 +1,17 @@
-#ifndef _SGL_LINE_H
-#define _SGL_LINE_H
+#ifndef _SGL_TEMPLATE_H  // TODO: Change name
+#define _SGL_TEMPLATE_H  // TODO: Change name
 
 #include <vector>
 #include <GL/glut.h>
+// TODO: Other includes
 
 #include "../sgl_utils/stl_utils.h"
 #include "../sgl_utils/gl_utils.h"
-#include "object_base.h"
+#include "object_base.h" // Necessary
 #include "point.h"
+// TODO: include files for other child objects
 
-class sglLine : public sglObject
+class sglTemplate : public sglObject // TODO: Change class name
 {
 public:
     // +++++++++++++++++++++++++
@@ -18,28 +20,32 @@ public:
     //       - OPropertiesMap    this_OP;    // will contain all native object properties (OP)
     //       - CPropertiesMap    this_CP;    // temporary variable (can be private)
     //    sglObject already declares following object properties (OP):
-    //       - visible, color, alpha
+    //       - visible, color, alpha, translation, scale
     //    sglObject already declares following link properties (LP):
     //       - visible
     
     // object (self) properties
-    declare_OP (double, linewidth, 1.0);
-    declare_OP (GLenum, linemode, (GLenum)GL_LINE_STRIP);
+    // TODO: Add.
+    //       Syntax:  declare_OP (type_name, variable_name, default_value);
+    //       Example: declare_OP (double, linewidth, 1.0);
     
     // link (to children) properties
-    declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
-    declare_LP (double, vertex_color_weight, -1.0); // use alpha as weight if negative
+    // TODO: Add.
+    //       Syntax: declare_LP (type_name, variable_name, default_value);
+    //       Example: declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
     
     // non-heritable object properties
-    // none.
+    // TODO: Add.
+    //       Example: std::string name;
     
     // ------------------------------------------
     
-    // Child pointers for ordered entry
-    std::vector <sglPoint*>  points;
+    // Child pointers for convenience
+    // TODO: Add.
+    //       Example: std::vector <sglPoint*>  points;
     
     // Local storage variables
-    // none.
+    // TODO: Add.
     
     // ------------------------------------------
     
@@ -64,11 +70,11 @@ public:
     // -------------------------
     // Mix parents' and self properties
     void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        // Use base class function to compute visible, color, alpha
+        // Use base class function to compute visible, color, alpha, translation
         sglObject::computeProperties (parent_CP, parent_child_LP);
         // --
         // Other object properties computation
-        linewidth(this_CP) = linewidth();
+        linewidth(this_CP) = linewidth() * scale(parent_CP, 1.0);
     }
     
     // +++++++++++++++++++++++++
@@ -118,15 +124,13 @@ public:
         computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
         // --
         if ( visible(this_CP) ) {
-            // --
-            // Apply transformations
-            for (int a=transformations_p.size()-1; a>=0; --a)
-                transformations_p[a]->apply();
-            // --
             glMatrixMode(GL_MODELVIEW);
             // 
             glLineWidth (linewidth(this_CP));
             glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
+            glPushMatrix();
+            glTranslated (translation()[0], translation()[1], translation()[2]); // Note: we don't use computed value since GL stacks 
+	                                                                  // will take care of that when 'glTranslated' is called for parents
 	            // Draw the line
 	            glBegin (linemode(this_CP));
                     for (auto it=points.begin(); it!=points.end(); ++it) { // iterate through the local vector storing the points
@@ -143,10 +147,8 @@ public:
                 // draw the points - iterate through the same points stored in 'childObjects_p'
                 for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)
                     it->first->draw (this_CP, it->second);
-            // --
-            // Remove transformations
-            for (int a=0; a<transformations_p.size(); ++a)
-                transformations_p[a]->remove();
+            //
+            glPopMatrix();
         }
     }
 };

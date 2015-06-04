@@ -26,11 +26,11 @@ public:
     //       - OPropertiesMap    this_OP;    // will contain all native object properties (OP)
     //       - CPropertiesMap    this_CP;  // temporary variable (can be private)
     //    sglObject already declares following object properties (OP):
-    //       - visible, color, alpha, translation, scale
+    //       - visible, color, alpha
     //    sglObject already declares following link properties (LP):
     //       - visible
     
-    // non-object properties
+    // non-heritable object properties
     std::string name;
     double width, height;
     // Properties specific to figure (non-object)

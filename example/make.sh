@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-opts="-std=gnu++11 -O0 -g -w -I. -I.."
+opts="-std=gnu++11 -O3 -g -w -I. -I.."
 libs="-lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext -lpthread"
 
 for examplename in "example1" # "example2"

@@ -4,8 +4,10 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 #include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_transformation_util.h"
 
 // ==========================================================
 // Property maps
@@ -86,7 +88,7 @@ public:
             delete child_obj_p;
     }
     
-    // -------------------------
+    // +++++++++++++++++++++++++
     // constructor:
     
     sglObjectBase () : shared(false) { }
@@ -103,10 +105,43 @@ public:
         }
     }
     
-    // -------------------------
-    // Destructor
+    // +++++++++++++++++++++++++
+    // Transformations
+    std::vector <sglTransformation*> transformations_p;
     
-    ~sglObjectBase () {
+    // -------------------------
+    // Adding/removing transformations:
+    
+    template <class transType> // objType must be derived from sglObjectBase
+    transType* addTransformation (const transType& trans) {
+        transType* new_trans = new transType (trans);
+        transformations_p.push_back (new_trans);
+        return (new_trans);
+    }
+    
+    void removeTransformation (sglTransformation* trans_p) {
+        auto found_it = std::find (transformations_p.begin(), transformations_p.end(), trans_p);
+        if (found_it != transformations_p.end()) {
+            delete (*found_it);
+            transformations_p.erase (found_it);
+        }
+    }
+    
+    void removeTransformation (int index = -1) {
+        if (index<0 || index>=transformations_p.size())
+            index = transformations_p.size() - 1;
+        delete (transformations_p[index]);
+        transformations_p.erase (transformations_p.begin() + index);
+    }
+    
+    // +++++++++++++++++++++++++
+    // This will be overwritten in 'sglObject'
+    virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) { }
+    
+    // +++++++++++++++++++++++++
+    // virtual destructor
+    
+    virtual ~sglObjectBase () {
         for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it) {
             auto found_it = it->first->parentObjects_p.find(this);
             if ( !(it->first->shared) ||   // Explicitly unshared
@@ -116,10 +151,6 @@ public:
                 it->first->parentObjects_p.erase (this);
         }
     }
-    
-    // -------------------------
-    // This will be overwritten in 'sglObject'
-    virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) { }
     
 private:
     sglObjectBase& operator=(const sglObjectBase& other) { } // prevent call to assignment operator
@@ -137,15 +168,15 @@ LPropertiesMap  sglObjectBase::empty_LP  =  LPropertiesMap();
 
 // object properties
 #define declare_OP(type,name,default) \
-    type& name (void) { if (this_OP.find(#name)==this_OP.end()) this_OP[#name] = default; return (sgl_any_cast (type &, this_OP[#name])); } \
-    type& name (OPropertiesMap& xxx_OP) { if (xxx_OP.find(#name)==xxx_OP.end()) xxx_OP[#name] = default; return ( sgl_any_cast (type &, xxx_OP[#name]) ); } \
-    const type& name (OPropertiesMap& xxx_OP, const type& alt_val) { if (xxx_OP.find(#name)==xxx_OP.end()) return (alt_val); else return ( sgl_any_cast (type &, xxx_OP[#name]) ); }
+    type& name (void) { if (this_OP.find(#name)==this_OP.end()) this_OP[#name] = default; return (sgl_any_cast (SINGLE_ARG(type &), this_OP[#name])); } \
+    type& name (OPropertiesMap& xxx_OP) { if (xxx_OP.find(#name)==xxx_OP.end()) xxx_OP[#name] = default; return ( sgl_any_cast (SINGLE_ARG(type &), xxx_OP[#name]) ); } \
+    const type& name (OPropertiesMap& xxx_OP, const type& alt_val) { if (xxx_OP.find(#name)==xxx_OP.end()) return (alt_val); else return ( sgl_any_cast (SINGLE_ARG(type &), xxx_OP[#name]) ); }
 
 // Link properties (to be declared in a parent)
 #define declare_LP(type,name,default) \
-    type& name (sglObjectBase* cp) { if (childObjects_p.find(cp)==childObjects_p.end()) addChild(cp); LPropertiesMap& tmp = childObjects_p[cp]; if (tmp.find(#name)==tmp.end()) tmp[#name] = default; return (sgl_any_cast (type &, tmp[#name])); } \
-    type& name (LPropertiesMap& xxx_LP) { if (xxx_LP.find(#name)==xxx_LP.end()) xxx_LP[#name] = default; return ( sgl_any_cast (type &, xxx_LP[#name]) ); } \
-    const type& name (LPropertiesMap& xxx_LP, const type& alt_val) { if (xxx_LP.find(#name)==xxx_LP.end()) return (alt_val); else return ( sgl_any_cast (type &, xxx_LP[#name]) ); }
+    type& name (sglObjectBase* cp) { if (childObjects_p.find(cp)==childObjects_p.end()) addChild(cp); LPropertiesMap& tmp = childObjects_p[cp]; if (tmp.find(#name)==tmp.end()) tmp[#name] = default; return (sgl_any_cast (SINGLE_ARG(type &), tmp[#name])); } \
+    type& name (LPropertiesMap& xxx_LP) { if (xxx_LP.find(#name)==xxx_LP.end()) xxx_LP[#name] = default; return ( sgl_any_cast (SINGLE_ARG(type &), xxx_LP[#name]) ); } \
+    const type& name (LPropertiesMap& xxx_LP, const type& alt_val) { if (xxx_LP.find(#name)==xxx_LP.end()) return (alt_val); else return ( sgl_any_cast (SINGLE_ARG(type &), xxx_LP[#name]) ); }
 
 // --------------------------------------------
 
@@ -164,15 +195,12 @@ public:
     declare_OP (bool, visible, true);
     declare_OP (std::vector<double>, color, sglMake3vec (0.0, 0.0, 0.0));
     declare_OP (double, alpha, 1.0);
-    // --
-    declare_OP (std::vector<double>, translation, sglMake3vec (0.0, 0.0, 0.0));
-    declare_OP (double, scale, 1.0);
     
     // link (to children) properties
     declare_LP (bool, visible, true);
     
-    // non-object properties
-    // Add properties that do not need to be passed on to children.
+    // non-heritable object properties
+    // none.
     
     // -------------------------
     // Constructors for setting default properties
@@ -191,8 +219,6 @@ public:
         color(this_CP) = color();
         alpha(this_CP) = alpha()  *  alpha(parent_CP, 1.0)  *  alpha(parent_child_LP, 1.0);
         // --
-        translation(this_CP) = translation(parent_CP, sglMake3vec (0.0, 0.0, 0.0)) + translation();
-        scale(this_CP) = scale() * scale(parent_CP, 1.0);
         // Can use more complex criteria set by user-defined parameters in properties, e.g., color_combine_mode = xor, and, or
     }
     
@@ -204,11 +230,16 @@ public:
         computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
         // --
         if (visible(this_CP)) {
-            // Draw self.
-            // Some OpenGL drawing calls.
+            // Apply transformations
+            for (int a=transformations_p.size()-1; a>=0; --a)
+                transformations_p[a]->apply();
+            // Draw self -- Some OpenGL drawing calls.
             // Draw children as desired
-            /* for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)
-                it->first->draw (this_CP, it->second); */
+            for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)
+                it->first->draw (this_CP, it->second);
+            // Remove transformations
+            for (int a=0; a<transformations_p.size(); ++a)
+                transformations_p[a]->remove();
         }
     }
 };
