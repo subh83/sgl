@@ -84,9 +84,9 @@ public:
             if (!sphere_quad) {
                 sphere_quad = gluNewQuadric();
             }
-            glMatrixMode(GL_MODELVIEW);
-            //
             glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
+            // 
+            glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
             glTranslated (coords()[0], coords()[1], coords()[2]); // Note: we don't use computed value since GL stacks 
                                                                   // will take care of that when 'glTranslated' is called for parents
