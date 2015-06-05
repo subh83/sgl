@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
         // change some properties, add/modify objects or sub-objects, etc.
         // ...
         my_fig.flush ();  // flush all pending changes to the figure
+        // pause for 100ms, etc.
     }
     
     // ...
@@ -99,9 +100,11 @@ Suggested compilation options:
 
 --------------------------------------------------------------------------
 
-Compiling:
+Compiling and examples:
 - This library is template-based.
-- There is nothing to build. Simply include the file "sgl.h" in your code.
+  There is nothing to build. Simply include the file "sgl.h" in your code.
 - For compiling, you'll need to link to the GL, glut and X11 libraries.
-- See the 'example' folder for examples (run the shell script to compile).
+  Besides that, you'll need the Boost library.
+- Most of the functionalities are intuitive and easy to find from the code.
+  See the 'example' folder for examples (run the shell script to compile).
 
