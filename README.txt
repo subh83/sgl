@@ -46,8 +46,11 @@ Accompanying modules (code included -- see individual code file/folder)
 Features/Objectives:
 - Simplify the OpenGL and GLUT interface to make it intuitive like MATLAB.
 - Automatic threading for OpenGL windows and processes.
+- Allow easy creation of objects and maintenance of object hierarchy.
+- Object properties computed/modified according to object hierarchy.
+- Easy access & modification to object properties and transformations.
 - Allow easy creation and management of multiple windows.
-- Allow easy creation of objects and change to their properties.
+
 
 --------------------------------------------------------------------------
 
@@ -67,25 +70,38 @@ int main(int argc, char *argv[])
     auto my_line = my_fig.addChild ( sglLine (-2.0,0.0,0.0, 2.0,0.0,0.0) );
     // etc...
     
-    // Set property of an object
+    // Set a property of an object
     my_line->linewidth() = 3.0;
+    
+    // Access a sub-object of an object (a point for a line)
+    my_line->points[0]->color() = sglMake3vec (1.0, 0.0, 0.0);
+    
+    // Add transformation to an object
+    my_line->addTransformation ( sglRotate(30.0,  0.0, 0.0, 1.0) );
     
     // ...
     
-    my_fig.flush ();  // flush all pending changes to the figure
-    my_fig.get_key();  // Pause for keystroke
+    // Pause for keystroke
+    my_fig.get_key();
+    
+    // Animation
+    while (true) {
+        // change some properties, add/modify objects or sub-objects, etc.
+        // ...
+        my_fig.flush ();  // flush all pending changes to the figure
+    }
     
     // ...
 }
 
 Suggested compilation options:
--std=gnu++11 -O3 -g -w -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext -lpthread
+-std=gnu++11 -O3 -g -w -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
 
 --------------------------------------------------------------------------
 
 Compiling:
 - This library is template-based.
 - There is nothing to build. Simply include the file "sgl.h" in your code.
-- For compiling, you'll need to link to the GL, glut, X11 and pthread libraries.
+- For compiling, you'll need to link to the GL, glut and X11 libraries.
 - See the 'example' folder for examples (run the shell script to compile).
 

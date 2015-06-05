@@ -6,7 +6,6 @@
 #include <string>
 #include <X11/Xlib.h>
 #include <GL/glut.h>
-#include <pthread.h>
 #include <thread>
 #include <chrono>
 
@@ -42,8 +41,7 @@ public:
     // Static variables specific to figure
     static bool  glutInitiated;
     static bool  glutMainLoopCalled;
-    static int   sglThreadID;
-    static pthread_t  sglThreadStruct;
+    static std::thread glutMainLoopThread;
     
     // Constructors for setting default properties
     sglFigure (std::string nm="<untitled>") : sglObject(sglMake3vec (1.0, 1.0, 1.0), 1.0) {
@@ -86,8 +84,7 @@ public:
 
 bool sglFigure::glutInitiated = false;
 bool sglFigure::glutMainLoopCalled = false;
-int sglFigure::sglThreadID;
-pthread_t sglFigure::sglThreadStruct;
+std::thread sglFigure::glutMainLoopThread;
 
 // ------------------------------------------
 
@@ -266,9 +263,7 @@ void sglFigure::init (int argc, char *argv[]) {
 	
 	if (!glutMainLoopCalled) { // active
         glutMainLoopCalled = true;
-        sglThreadID = pthread_create (&sglThreadStruct, NULL, 
-                                        [](void* d) -> void* { glutMainLoop(); }, 
-                                                NULL);
+        glutMainLoopThread = std::thread ( [](void) -> void { glutMainLoop(); } );
     }
 	
 	// -------------
