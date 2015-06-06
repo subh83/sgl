@@ -123,22 +123,24 @@ public:
             for (int a=transformations_p.size()-1; a>=0; --a)
                 transformations_p[a]->apply();
             // --
-            glMatrixMode(GL_MODELVIEW);
-            // 
-            glLineWidth (linewidth(this_CP));
-            glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
-            // Draw the line
-            glBegin (linemode(this_CP));
-                for (auto it=points.begin(); it!=points.end(); ++it) { // iterate through the local vector storing the points
-                    if ( use_vertex_color(*it) ) {
-                        double w = (vertex_color_weight(*it) < 0.0) ? (*it)->alpha() : vertex_color_weight(*it);
-                        glColor ( (1.0-w) * color(this_CP) + w * (*it)->color(),  alpha(this_CP) ); // point color
+            if (points.size() > 1) {
+                glMatrixMode (GL_MODELVIEW);
+                // 
+                glLineWidth (linewidth(this_CP));
+                glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
+                // Draw the line
+                glBegin (linemode(this_CP));
+                    for (auto it=points.begin(); it!=points.end(); ++it) { // iterate through the local vector storing the points
+                        if ( use_vertex_color(*it) ) {
+                            double w = (vertex_color_weight(*it) < 0.0) ? (*it)->alpha() : vertex_color_weight(*it);
+                            glColor ( (1.0-w) * color(this_CP) + w * (*it)->color(),  alpha(this_CP) ); // point color
+                        }
+                        else
+                            glColor (color(this_CP), alpha(this_CP)); // self color
+                        glVertex3d ((*it)->coords()[0], (*it)->coords()[1], (*it)->coords()[2]);
                     }
-                    else
-                        glColor (color(this_CP), alpha(this_CP)); // self color
-                    glVertex3f ((*it)->coords()[0], (*it)->coords()[1], (*it)->coords()[2]);
-                }
-            glEnd();
+                glEnd();
+            }
             // --
             // draw the points - iterate through the same points stored in 'childObjects_p'
             for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)

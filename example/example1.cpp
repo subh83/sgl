@@ -8,7 +8,6 @@
 
 #include "../sgl.h"
 
-#define PI 3.14159265359
 #define rand_d (2.0 * ((double)rand()) / ((double)RAND_MAX) - 1.0)
 
 int main(int argc, char *argv[])
@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
     
     // -----------------------------------
     // -----------------------------------
-    // Animation: Randomly change the colors and constantly increment the x translation
+    // Animation: Randomly change the colors and constantly increment the y-translation & z-rotation
     printf("[animation: randomly change the colors and constantly increment the y-translation & z-rotation]\n");
     
     while (true) {

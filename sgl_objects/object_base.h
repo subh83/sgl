@@ -214,6 +214,8 @@ public:
     
     void computeProperties (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
         // this_CP = this_OP; // set defaults
+        for (auto it=this_OP.begin(); it!=this_OP.end(); ++it)
+            this_CP[it->first] = it->second; 
         // make this a privte member? (to be use by 'draw' only)
         visible(this_CP) = visible()  &  visible(parent_CP, true)  &  visible(parent_child_LP, true);
         color(this_CP) = color();

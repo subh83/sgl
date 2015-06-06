@@ -51,6 +51,9 @@ Features/Objectives:
 - Easy access & modification to object properties and transformations.
 - Allow easy creation and management of multiple windows.
 
+TODO:
+- Add more objects to the 'sgl_objects' folder.
+  See the '_template.h' file for a template.
 
 --------------------------------------------------------------------------
 
