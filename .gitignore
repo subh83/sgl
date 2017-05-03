@@ -24,8 +24,8 @@
 !sgl/glt_zpr/*.h
 !sgl/glt_zpr/*.c
 
-!example-sgl/
-!example-sgl/*.h
-!example-sgl/*.cpp
-!example-sgl/makefile
+!examples-sgl/
+!examples-sgl/*.h
+!examples-sgl/*.cpp
+!examples-sgl/makefile
 
