@@ -1,16 +1,12 @@
 # Change these if needed or pass as input parameter
-# PREFIX = /usr/local
+PREFIX = /usr/local
 
 # ================================
 
 # INCLUDE FOLDER
 # --------------
 
-ifneq ("$(PREFIX)","")
-    SGL_FOLDER = $(PREFIX)/include
-else
-    SGL_FOLDER = /usr/local/include
-endif
+SGL_FOLDER = $(PREFIX)/include
 
 # --------------------------------------------
 # Install
