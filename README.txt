@@ -53,11 +53,19 @@ TODO:
 - Add more objects to the 'sgl_objects' folder.
   See the '_template.h' file for a template.
 
---------------------------------------------------------------------------
+==========================================================================
+
+Install:
+-------
+- cd to the folder containg this README.txt file
+- Run:
+    sudo make install
+
 
 Basic usage:
+-----------
 
-#include "sgl.h"
+#include "sgl/sgl.h"
 // ...
 
 int main(int argc, char *argv[])
@@ -96,16 +104,25 @@ int main(int argc, char *argv[])
     // ...
 }
 
+
 Suggested compilation options:
+-----------------------------
+
 -std=gnu++11 -O3 -g -w -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
 
---------------------------------------------------------------------------
+==========================================================================
 
 Compiling and examples:
+----------------------
+
 - This library is template-based.
   There is nothing to build. Simply include the file "sgl.h" in your code.
-- For compiling, you'll need to link to the GL, glut and X11 libraries.
-  Besides that, you'll need the Boost library.
+  You can install the headers by running
+        sudo make install
+
+- For compiling your program, you'll need to link to the GL, glut and X11
+  libraries. Besides that, you'll need the Boost library.
+
 - Most of the functionalities are intuitive and easy to find from the code.
-  See the 'example' folder for examples (run the shell script to compile).
+  See the 'examples' folder for examples (run 'make all' to compile).
 

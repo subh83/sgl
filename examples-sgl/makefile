@@ -17,6 +17,8 @@ endif
 INC_SGL = -I$(SGL_FOLDER)
 INC_LOCAL = -I. -Iinclude
 
+SGL_INTRO_STRING = "Including SGL from '$(SGL_FOLDER)/'\n"
+
 # --------------------------------------------
 # common flags
 
@@ -36,10 +38,12 @@ all: example1 example2
 .PHONY: example1
 example1:
 	@printf "\nNow compiling '$@'...\n"
+	@printf $(SGL_INTRO_STRING)
 	$(CC) $(CFLAGS) $(WARNS) $(INC_LOCAL) $(INC_SGL) -o $@ $@.cpp $(LIBS) $(LIBS_OPENGL)
 
 .PHONY: example2
 example2:
 	@printf "\nNow compiling '$@'...\n"
+	@printf $(SGL_INTRO_STRING)
 	$(CC) $(CFLAGS) $(WARNS) $(INC_LOCAL) $(INC_SGL) -o $@ $@.cpp $(LIBS) $(LIBS_OPENGL)
 
