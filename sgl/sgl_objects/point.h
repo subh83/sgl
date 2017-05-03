@@ -4,9 +4,9 @@
 #include <vector>
 #include <GL/glut.h>
 
-#include "../sgl_utils/stl_utils.h"
-#include "../sgl_utils/gl_utils.h"
-#include "object_base.h"
+#include "sgl/sgl_utils/stl_utils.h"
+#include "sgl/sgl_utils/gl_utils.h"
+#include "sgl/sgl_objects/object_base.h"
 
 // --------------------------------------------
 
@@ -73,7 +73,7 @@ public:
     // Drawing function
     
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
+        sgl_draw_function_head; // computes 'this_CP'
         // --
         if ( visible (this_CP) ) {
             // --

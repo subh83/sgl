@@ -1,15 +1,19 @@
-#ifndef _SGL_LINE_H
-#define _SGL_LINE_H
+#ifndef _SGL_TEMPLATE_H  // TODO: Change name
+#define _SGL_TEMPLATE_H  // TODO: Change name
 
-#include <vector>
 #include <GL/glut.h>
+// #include <vector>
+// TODO: Other includes
 
-#include "../sgl_utils/stl_utils.h"
-#include "../sgl_utils/gl_utils.h"
-#include "object_base.h"
-#include "point.h"
+#include "sgl/sgl_utils/stl_utils.h"
+#include "sgl/sgl_utils/gl_utils.h"
+#include "sgl/sgl_utils/gl_transformation_util.h"
 
-class sglLine : public sglObject
+#include "sgl/sgl_objects/object_base.h" // Necessary
+// #include "point.h"
+// TODO: include files for other child objects
+
+class sglTemplate : public sglObject // TODO: Change class name
 {
 public:
     // +++++++++++++++++++++++++
@@ -18,48 +22,49 @@ public:
     //       - OPropertiesMap    this_OP;    // will contain all native object properties (OP)
     //       - CPropertiesMap    this_CP;    // temporary variable (can be private)
     //    sglObject already declares following object properties (OP):
-    //       - visible, color, alpha
+    //       - visible, color, alpha, translation, scale
     //    sglObject already declares following link properties (LP):
     //       - visible
     
     // object (self) properties
-    declare_OP (double, linewidth, 1.0);
-    declare_OP (GLenum, linemode, (GLenum)GL_LINE_STRIP);
+    // TODO: Add.
+    //       Syntax:  declare_OP (type_name, variable_name, default_value);
+    //       Example: declare_OP (double, linewidth, 1.0);
     
     // link (to children) properties
-    declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
-    declare_LP (double, vertex_color_weight, -1.0); // use alpha as weight if negative
+    // TODO: Add.
+    //       Syntax: declare_LP (type_name, variable_name, default_value);
+    //       Example: declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
     
     // non-heritable object properties
-    // none.
+    // TODO: Add.
+    //       Example: std::string name;
     
     // ------------------------------------------
     
-    // Child pointers for ordered entry
-    std::vector <sglPoint*>  points;
+    // Child pointers for convenience
+    // TODO: Add.
+    //       Example: std::vector <sglPoint*>  points;
     
     // Local storage variables
-    // none.
+    // TODO: Add.
     
     // ------------------------------------------
     
     // Constructors for setting default properties
+    // TODO: Add.
+    /* Examples:
     
-    sglLine (double r=1.0, double g=0.0, double b=0.0, double a=1.0, double w=1.0) 
+    sglTemplate (double r=1.0, double g=0.0, double b=0.0, double a=1.0, double w=1.0) 
             : sglObject (sglMake3vec(r,g,b), a)  { linewidth() = w; }
     
-    sglLine (const std::vector<double>& p1, const std::vector<double>& p2,
+    sglTemplate (const std::vector<double>& p1, const std::vector<double>& p2,
                 const std::vector<double>& c=sglMake3vec (1.0, 0.0, 0.0), double a=1.0, double w=1.0) 
             : sglObject (c, a) {
         sglPoint* pp1 = addPoint ( sglPoint (p1) );
         sglPoint* pp2 = addPoint ( sglPoint (p2) );
         linewidth() = w;
-    }
-    
-    sglLine (double x0, double y0, double z0, double x1, double y1, double z1,
-                double r=1.0, double g=0.0, double b=0.0, double a=1.0) : 
-        sglLine ( sglMake3vec(x0,y0,z0), sglMake3vec(x1,y1,z1), sglMake3vec(r,g,b), a )
-    { }
+    } */
     
     // -------------------------
     // Mix parents' and self properties
@@ -68,13 +73,20 @@ public:
         sglObject::computeProperties (parent_CP, parent_child_LP);
         // --
         // Other object properties computation
-        linewidth(this_CP) = linewidth();
+        // TODO: Add.
+        //      Example: linewidth(this_CP) = linewidth();
     }
     
     // +++++++++++++++++++++++++
     // -------------------------
-    // functions for adding/removing/showing points
+    // functions for adding/removing/showing child objects
+    // Convention: Each add function has two versions:
+    //                      i. One that accepts reference -- will create a distinct copy of the child object
+    //                     ii. One that accepts pointer -- will link to a previously-created child object
     
+    // TODO: Add.
+    
+    /* Examples:
     sglPoint* addPoint (const sglPoint& p) {
         // Add as child first
         sglPoint* pp = addChild (p);
@@ -98,53 +110,48 @@ public:
         // ...
         // return
         return (pp);
-    }
-    
-    // TODO: removePoint, insertPoint
+    } */
     
     // -------------------------
-    // Functions to change link properties en-masse
+    // Functions to change link-to-child properties en-masse
     
+    // TODO: Add.
+    /* Examples:
     void use_vertex_color_all (bool use=true) {
         for (auto it=points.begin(); it!=points.end(); ++it) // iterate through the local vector storing the points
             use_vertex_color(*it) = use;
-    }
+    } */
     
     // +++++++++++++++++++++++++
     // -------------------------
     // Drawing function
     
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
+        sgl_draw_function_head; // computes 'this_CP'
         // --
         if ( visible(this_CP) ) {
+        
             // --
             // Apply transformations
             for (int a=transformations_p.size()-1; a>=0; --a)
                 transformations_p[a]->apply();
+            
             // --
-            if (points.size() > 1) {
-                glMatrixMode (GL_MODELVIEW);
-                // 
-                glLineWidth (linewidth(this_CP));
-                glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
-                // Draw the line
-                glBegin (linemode(this_CP));
-                    for (auto it=points.begin(); it!=points.end(); ++it) { // iterate through the local vector storing the points
-                        if ( use_vertex_color(*it) ) {
-                            double w = (vertex_color_weight(*it) < 0.0) ? (*it)->alpha() : vertex_color_weight(*it);
-                            glColor ( (1.0-w) * color(this_CP) + w * (*it)->color(),  alpha(this_CP) ); // point color
-                        }
-                        else
-                            glColor (color(this_CP), alpha(this_CP)); // self color
-                        glVertex3d ((*it)->coords()[0], (*it)->coords()[1], (*it)->coords()[2]);
-                    }
-                glEnd();
-            }
-            // --
-            // draw the points - iterate through the same points stored in 'childObjects_p'
+            // TODO: Execute OpenGL core functions to draw self
+            /* Example:
+            glMatrixMode(GL_MODELVIEW);
+            glLineWidth (linewidth(this_CP));
+            glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
+            glBegin (linemode(this_CP));
+                for (auto it=points.begin(); it!=points.end(); ++it) // iterate through the local vector storing the points
+                    glVertex3f ((*it)->coords()[0], (*it)->coords()[1], (*it)->coords()[2]);
+            glEnd(); */
+            
+            // TODO: Draw children if required
+            /* Example:
             for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)
-                it->first->draw (this_CP, it->second);
+                it->first->draw (this_CP, it->second); */
+            
             // --
             // Remove transformations
             for (int a=0; a<transformations_p.size(); ++a)

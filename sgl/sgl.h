@@ -1,3 +1,7 @@
+#ifndef _SGL_y7483fhcbcyg88c_H
+#define _SGL_y7483fhcbcyg88c_H
+namespace sgl {
+}
 
 // Macros
 #define SINGLE_ARG(...) __VA_ARGS__
@@ -12,6 +16,13 @@
 
 // ===============================
 
+#include "sgl_utils/simple_lock.h"
+
+typedef enum {SGL_DRAW_LOCK, SGL_MEM_LOCK} sglLockStates;
+SimpleLock<LOCK_RECURSIVE,sglLockStates> sglDrawLock;
+
+// ===============================
+
 // utils
 #include "sgl_utils/stl_utils.h"
 #include "sgl_utils/gl_utils.h"
@@ -21,4 +32,7 @@
 #include "sgl_objects/figure.h"
 #include "sgl_objects/point.h"
 #include "sgl_objects/line.h"
+#include "sgl_objects/box.h"
 
+// }
+#endif

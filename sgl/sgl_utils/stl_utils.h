@@ -3,6 +3,9 @@
 
 #include <vector>
 
+#define MIN(x,y) (((x)<(y))?(x):(y))
+#define MAX(x,y) (((x)<(y))?(y):(x))
+
 std::vector<double> sglMake3vec (const double& r, const double& g, const double& b) {
     std::vector<double> ret(3);
     ret[0] = r; ret[1] = g; ret[2] = b;

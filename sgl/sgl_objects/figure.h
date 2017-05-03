@@ -9,9 +9,9 @@
 #include <thread>
 #include <chrono>
 
-#include "glt_zpr/zpr.h"
+#include "sgl/glt_zpr/zpr.h"
 
-#include "../sgl_utils/stl_utils.h"
+#include "sgl/sgl_utils/stl_utils.h"
 #include "object_base.h"
 
 // --------------------------------------------

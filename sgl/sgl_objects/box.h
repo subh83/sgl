@@ -1,17 +1,24 @@
 #ifndef _SGL_TEMPLATE_H  // TODO: Change name
 #define _SGL_TEMPLATE_H  // TODO: Change name
 
-#include <vector>
 #include <GL/glut.h>
+// #include <vector>
 // TODO: Other includes
 
-#include "../sgl_utils/stl_utils.h"
-#include "../sgl_utils/gl_utils.h"
-#include "object_base.h" // Necessary
-#include "point.h"
+#include "sgl/sgl_utils/stl_utils.h"
+#include "sgl/sgl_utils/gl_utils.h"
+#include "sgl/sgl_utils/gl_transformation_util.h"
+
+#include "sgl/sgl_objects/object_base.h" // Necessary
+// #include "point.h"
 // TODO: include files for other child objects
 
-class sglTemplate : public sglObject // TODO: Change class name
+int sglBox_TriangleIndices[][3] = 
+    {{0,1,3},{2,1,3}, {4,5,7},{6,5,7}, {3,2,7},{6,2,7}, {1,2,5},{6,2,5}, {0,1,4},{5,1,4}, {0,3,4},{7,3,4}};
+float sglBox_TriangleNormals[][3] = 
+    {{0.0f,0.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f}, {1.0f,0.0f,0.0f}, {0.0f,-1.0f,0.0f}, {-1.0f,0.0f,0.0f}};
+
+class sglBox : public sglObject // TODO: Change class name
 {
 public:
     // +++++++++++++++++++++++++
@@ -33,6 +40,8 @@ public:
     // TODO: Add.
     //       Syntax: declare_LP (type_name, variable_name, default_value);
     //       Example: declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
+    declare_LP (bool, use_vertex_color, false); // Don't use vertex color by default
+    declare_LP (double, vertex_color_weight, -1.0); // use alpha as weight if negative
     
     // non-heritable object properties
     // TODO: Add.
@@ -43,6 +52,7 @@ public:
     // Child pointers for convenience
     // TODO: Add.
     //       Example: std::vector <sglPoint*>  points;
+    std::vector <sglPoint*>  points; // 8 in total. Indexed: 0,1,2,3; 4,5,6,7
     
     // Local storage variables
     // TODO: Add.
@@ -51,18 +61,33 @@ public:
     
     // Constructors for setting default properties
     // TODO: Add.
-    /* Examples:
     
-    sglTemplate (double r=1.0, double g=0.0, double b=0.0, double a=1.0, double w=1.0) 
-            : sglObject (sglMake3vec(r,g,b), a)  { linewidth() = w; }
+    sglBox (double x0, double y0, double z0, double x1, double y1, double z1,
+                double r=1.0, double g=0.0, double b=0.0, double a=1.0) 
+        : sglObject (sglMake3vec(r,g,b), a) 
+    {
+        double  xx0 = MIN(x0,x1),  yy0 = MIN(y0,y1),  zz0 = MIN(z0,z1); 
+        double  xx1 = MAX(x0,x1),  yy1 = MAX(y0,y1),  zz1 = MAX(z0,z1); 
+        // 
+        sglPoint* pp0 = addPoint ( sglPoint (sglMake3vec (xx0,yy0,zz0)) );
+        sglPoint* pp1 = addPoint ( sglPoint (sglMake3vec (xx1,yy0,zz0)) );
+        sglPoint* pp2 = addPoint ( sglPoint (sglMake3vec (xx1,yy1,zz0)) );
+        sglPoint* pp3 = addPoint ( sglPoint (sglMake3vec (xx0,yy1,zz0)) );
+        //
+        sglPoint* pp4 = addPoint ( sglPoint (sglMake3vec (xx0,yy0,zz1)) );
+        sglPoint* pp5 = addPoint ( sglPoint (sglMake3vec (xx1,yy0,zz1)) );
+        sglPoint* pp6 = addPoint ( sglPoint (sglMake3vec (xx1,yy1,zz1)) );
+        sglPoint* pp7 = addPoint ( sglPoint (sglMake3vec (xx0,yy1,zz1)) );
+    }
     
-    sglTemplate (const std::vector<double>& p1, const std::vector<double>& p2,
-                const std::vector<double>& c=sglMake3vec (1.0, 0.0, 0.0), double a=1.0, double w=1.0) 
-            : sglObject (c, a) {
-        sglPoint* pp1 = addPoint ( sglPoint (p1) );
-        sglPoint* pp2 = addPoint ( sglPoint (p2) );
-        linewidth() = w;
-    } */
+    sglBox (const std::vector<double>& p1, const std::vector<double>& p2,
+                const std::vector<double>& c=sglMake3vec (1.0, 0.0, 0.0), double a=1.0) 
+            : sglBox (p1[0],p1[1],p1[2], p2[0],p2[1],p2[2], c[0],c[1],c[2], a) 
+    { }
+    
+    sglBox (double r=1.0, double g=0.0, double b=0.0, double a=1.0) 
+            : sglBox (sglMake3vec(0.0,0.0,0.0), sglMake3vec(1.0,1.0,1.0), sglMake3vec(r,g,b), a)
+    {  }
     
     // -------------------------
     // Mix parents' and self properties
@@ -78,10 +103,12 @@ public:
     // +++++++++++++++++++++++++
     // -------------------------
     // functions for adding/removing/showing child objects
+    // Convention: Each add function has two versions:
+    //                      i. One that accepts reference -- will create a distinct copy of the child object
+    //                     ii. One that accepts pointer -- will link to a previously-created child object
     
     // TODO: Add.
     
-    /* Examples:
     sglPoint* addPoint (const sglPoint& p) {
         // Add as child first
         sglPoint* pp = addChild (p);
@@ -96,33 +123,21 @@ public:
         return (pp);
     }
     
-    sglPoint* addPoint (sglPoint* pp) {
-        // Add as child first
-        pp = addChild (pp);
-        // insert in local variables
-        points.push_back (pp);
-        // set some link properties if required
-        // ...
-        // return
-        return (pp);
-    } */
-    
     // -------------------------
     // Functions to change link-to-child properties en-masse
     
     // TODO: Add.
-    /* Examples:
     void use_vertex_color_all (bool use=true) {
         for (auto it=points.begin(); it!=points.end(); ++it) // iterate through the local vector storing the points
             use_vertex_color(*it) = use;
-    } */
+    }
     
     // +++++++++++++++++++++++++
     // -------------------------
     // Drawing function
     
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
+        sgl_draw_function_head; // computes 'this_CP'
         // --
         if ( visible(this_CP) ) {
         
@@ -133,19 +148,23 @@ public:
             
             // --
             // TODO: Execute OpenGL core functions to draw self
-            /* Example:
             glMatrixMode(GL_MODELVIEW);
-            glLineWidth (linewidth(this_CP));
             glColor (color(this_CP), alpha(this_CP)); // set color from 'this_CP'
-            glBegin (linemode(this_CP));
-                for (auto it=points.begin(); it!=points.end(); ++it) // iterate through the local vector storing the points
-                    glVertex3f ((*it)->coords()[0], (*it)->coords()[1], (*it)->coords()[2]);
-            glEnd(); */
+            glBegin (GL_TRIANGLES);
+                // Draw all 12 triangles
+                for (int a=0; a<12; ++a) {
+                    glNormal3f (sglBox_TriangleNormals[a/2][0], sglBox_TriangleNormals[a/2][1], 
+                                                                            sglBox_TriangleNormals[a/2][2]);
+                    for (int b=0; b<3; ++b)
+                        glVertex3f (points[ sglBox_TriangleIndices[a][b] ]->coords()[0], 
+                                        points[ sglBox_TriangleIndices[a][b] ]->coords()[1], 
+                                            points[ sglBox_TriangleIndices[a][b] ]->coords()[2]);
+                }
+            glEnd();
             
             // TODO: Draw children if required
-            /* Example:
             for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it)
-                it->first->draw (this_CP, it->second); */
+                it->first->draw (this_CP, it->second);
             
             // --
             // Remove transformations

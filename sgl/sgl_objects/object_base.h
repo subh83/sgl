@@ -6,8 +6,9 @@
 #include <unordered_set>
 #include <functional>
 
-#include "../sgl_utils/stl_utils.h"
-#include "../sgl_utils/gl_transformation_util.h"
+#include "sgl/sgl_utils/stl_utils.h"
+#include "sgl/sgl_utils/gl_transformation_util.h"
+#include "sgl/sgl_utils/simple_lock.h"
 
 // ==========================================================
 // Property maps
@@ -27,6 +28,8 @@ public:
 };
 
 // ==========================================================
+
+#define declare_ModifiesMemberUsedInDrawing   ActivateSimpleLock<LOCK_RECURSIVE,sglLockStates> sgl_obj_fun_lock (sglDrawLock, SGL_MEM_LOCK);
 
 // Class without properties. Only for maintaining parent-child relationship
 class sglObjectBase
@@ -51,6 +54,8 @@ public:
 
     template <class objType> // objType must be derived from sglObjectBase
     objType* addChild (const objType& child,  LPropertiesMap parent_child_LP=empty_LP) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         // make copy (call copy constructor)
         objType* new_child = new objType (child);
         new_child->shared = false;
@@ -66,6 +71,8 @@ public:
 
     template <class objType> // objType must be derived from sglObjectBase
     objType* addChild (objType* child_p, LPropertiesMap parent_child_LP=empty_LP) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         child_p->shared = true;
         // register parent
         child_p->parentObjects_p.insert (this);
@@ -78,6 +85,8 @@ public:
     // remove a child
 
     void removeChild (sglObjectBase* child_obj_p) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         // de-register child
         childObjects_p.erase (child_obj_p);
         // de-register parent
@@ -99,6 +108,8 @@ public:
     
     sglObjectBase (const sglObjectBase& other) : 
                     shared(other.shared), parentObjects_p(other.parentObjects_p), childObjects_p(other.childObjects_p) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it) {
             it->first->parentObjects_p.insert (this);
             it->first->shared = true;
@@ -114,12 +125,16 @@ public:
     
     template <class transType> // objType must be derived from sglObjectBase
     transType* addTransformation (const transType& trans) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         transType* new_trans = new transType (trans);
         transformations_p.push_back (new_trans);
         return (new_trans);
     }
     
     void removeTransformation (sglTransformation* trans_p) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         auto found_it = std::find (transformations_p.begin(), transformations_p.end(), trans_p);
         if (found_it != transformations_p.end()) {
             delete (*found_it);
@@ -128,6 +143,8 @@ public:
     }
     
     void removeTransformation (int index = -1) {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         if (index<0 || index>=transformations_p.size())
             index = transformations_p.size() - 1;
         delete (transformations_p[index]);
@@ -135,13 +152,15 @@ public:
     }
     
     // +++++++++++++++++++++++++
-    // This will be overwritten in 'sglObject'
+    // This will be overwritten in 'sglObject':
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) { }
     
     // +++++++++++++++++++++++++
     // virtual destructor
     
     virtual ~sglObjectBase () {
+        declare_ModifiesMemberUsedInDrawing;
+        // --
         for (auto it=childObjects_p.begin(); it!=childObjects_p.end(); ++it) {
             auto found_it = it->first->parentObjects_p.find(this);
             if ( !(it->first->shared) ||   // Explicitly unshared
@@ -168,15 +187,22 @@ LPropertiesMap  sglObjectBase::empty_LP  =  LPropertiesMap();
 
 // object properties
 #define declare_OP(type,name,default) \
-    type& name (void) { if (this_OP.find(#name)==this_OP.end()) this_OP[#name] = default; return (sgl_any_cast (SINGLE_ARG(type &), this_OP[#name])); } \
-    type& name (OPropertiesMap& xxx_OP) { if (xxx_OP.find(#name)==xxx_OP.end()) xxx_OP[#name] = default; return ( sgl_any_cast (SINGLE_ARG(type &), xxx_OP[#name]) ); } \
-    const type& name (OPropertiesMap& xxx_OP, const type& alt_val) { if (xxx_OP.find(#name)==xxx_OP.end()) return (alt_val); else return ( sgl_any_cast (SINGLE_ARG(type &), xxx_OP[#name]) ); }
+    type& name (void) { declare_ModifiesMemberUsedInDrawing; if (this_OP.find(#name)==this_OP.end()) this_OP[#name] = default; return (sgl_any_cast (SINGLE_ARG(type &), this_OP[#name])); } \
+    type& name (OPropertiesMap& xxx_OP) { declare_ModifiesMemberUsedInDrawing; if (xxx_OP.find(#name)==xxx_OP.end()) xxx_OP[#name] = default; return ( sgl_any_cast (SINGLE_ARG(type &), xxx_OP[#name]) ); } \
+    const type& name (OPropertiesMap& xxx_OP, const type& alt_val) { declare_ModifiesMemberUsedInDrawing; if (xxx_OP.find(#name)==xxx_OP.end()) return (alt_val); else return ( sgl_any_cast (SINGLE_ARG(type &), xxx_OP[#name]) ); }
 
 // Link properties (to be declared in a parent)
 #define declare_LP(type,name,default) \
-    type& name (sglObjectBase* cp) { if (childObjects_p.find(cp)==childObjects_p.end()) addChild(cp); LPropertiesMap& tmp = childObjects_p[cp]; if (tmp.find(#name)==tmp.end()) tmp[#name] = default; return (sgl_any_cast (SINGLE_ARG(type &), tmp[#name])); } \
-    type& name (LPropertiesMap& xxx_LP) { if (xxx_LP.find(#name)==xxx_LP.end()) xxx_LP[#name] = default; return ( sgl_any_cast (SINGLE_ARG(type &), xxx_LP[#name]) ); } \
-    const type& name (LPropertiesMap& xxx_LP, const type& alt_val) { if (xxx_LP.find(#name)==xxx_LP.end()) return (alt_val); else return ( sgl_any_cast (SINGLE_ARG(type &), xxx_LP[#name]) ); }
+    type& name (sglObjectBase* cp) { declare_ModifiesMemberUsedInDrawing; if (childObjects_p.find(cp)==childObjects_p.end()) addChild(cp); LPropertiesMap& tmp = childObjects_p[cp]; if (tmp.find(#name)==tmp.end()) tmp[#name] = default; return (sgl_any_cast (SINGLE_ARG(type &), tmp[#name])); } \
+    type& name (LPropertiesMap& xxx_LP) { declare_ModifiesMemberUsedInDrawing; if (xxx_LP.find(#name)==xxx_LP.end()) xxx_LP[#name] = default; return ( sgl_any_cast (SINGLE_ARG(type &), xxx_LP[#name]) ); } \
+    const type& name (LPropertiesMap& xxx_LP, const type& alt_val) { declare_ModifiesMemberUsedInDrawing; if (xxx_LP.find(#name)==xxx_LP.end()) return (alt_val); else return ( sgl_any_cast (SINGLE_ARG(type &), xxx_LP[#name]) ); }
+
+// --------------------------------------------
+
+#define sgl_draw_function_head      ActivateSimpleLock<LOCK_RECURSIVE,sglLockStates> sgl_obj_fun_lock (sglDrawLock, SGL_DRAW_LOCK); \
+                                    computeProperties (parent_CP, parent_child_LP);
+                            // ...
+#define sgl_draw_end    
 
 // --------------------------------------------
 
@@ -226,10 +252,9 @@ public:
     
     // +++++++++++++++++++++++++
     // -------------------------
-    // Drawing functions
-    
+    // drawing (to be over-written)
     virtual void draw (CPropertiesMap&  parent_CP,  LPropertiesMap&  parent_child_LP) {
-        computeProperties (parent_CP, parent_child_LP); // computes 'this_CP'
+        sgl_draw_function_head; // computes 'this_CP'
         // --
         if (visible(this_CP)) {
             // Apply transformations
@@ -244,6 +269,7 @@ public:
                 transformations_p[a]->remove();
         }
     }
+    
 };
 
 #endif

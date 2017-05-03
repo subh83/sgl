@@ -2,9 +2,9 @@
 *                                                                        *
 *  Simple OpenGL (SGL)                                                   *
 *  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
-*  Version 0.3b                                                          *
+*  Version 1.0a                                                          *
 *  ----------------------------------------------------------            *
-*  Copyright (C) 2015  Subhrajit Bhattacharya                            *
+*  Copyright (C) 2017  Subhrajit Bhattacharya                            *
 *                                                                        *
 *  This program is free software: you can redistribute it and/or modify  *
 *  it under the terms of the GNU General Public License as published by  *
@@ -27,8 +27,6 @@
 Developers / contributors
 --------------------------------------------------------------------------
   - Subhrajit Bhattacarya (maintainer): subhrajit@gmail.com
-  - 
-    [Add your name to the list above.]
 
 
 Accompanying modules (code included -- see individual code file/folder)

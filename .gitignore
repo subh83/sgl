@@ -2,21 +2,30 @@
 *
 
 # Except for the following:
+
 !/.gitignore
 !/README.txt
 !/*.h
 !/*.cpp
-!sgl_objects/
-!sgl_objects/*.h
-!sgl_objects/*.cpp
-!sgl_utils/
-!sgl_utils/*.h
-!sgl_utils/*.cpp
-!glt_zpr/
-!glt_zpr/*.h
-!glt_zpr/*.c
-!example/
-!example/*.h
-!example/*.cpp
-!example/*.sh
+
+!sgl/
+!sgl/*.h
+!sgl/*.cpp
+
+!sgl/sgl_objects/
+!sgl/sgl_objects/*.h
+!sgl/sgl_objects/*.cpp
+
+!sgl/sgl_utils/
+!sgl/sgl_utils/*.h
+!sgl/sgl_utils/*.cpp
+
+!sgl/glt_zpr/
+!sgl/glt_zpr/*.h
+!sgl/glt_zpr/*.c
+
+!example-sgl/
+!example-sgl/*.h
+!example-sgl/*.cpp
+!example-sgl/makefile
 
