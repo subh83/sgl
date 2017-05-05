@@ -44,6 +44,8 @@ Accompanying modules (code included -- see individual code file/folder)
 **************************************************************************
 
 Features/Objectives:
+--------------------------------------------------------------------------
+
 - Simplify the OpenGL and GLUT interface to make it intuitive like MATLAB.
 - Automatic threading for OpenGL windows and processes.
 - Allow easy creation of objects and maintenance of object hierarchy.
@@ -59,7 +61,7 @@ TODO:
 
 Install:
 -------
-- cd to the folder containg this README.txt file
+- cd to the folder containg this README file
 - Run:
     sudo make install
 
