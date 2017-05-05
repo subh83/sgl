@@ -4,7 +4,7 @@
 # Except for the following:
 
 !/.gitignore
-!/README.txt
+!/README.md
 !/makefile
 !/*.h
 !/*.cpp
