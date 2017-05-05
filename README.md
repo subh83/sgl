@@ -63,8 +63,8 @@ Install:
 -------
 - cd to the folder containg this README file
 - Run:
-
-    sudo make install
+  
+        sudo make install
 
 
 Basic usage:
