@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
     sglFigure myFig3; // create another sglFigure instance
     myFig3.init (); // Display the figure
     
-    sglBox* bx = myFig3.addChild ( sglBox (0,0,0, 1,1,1, 0.4,0.4,0.4) );// draw a box
+    sglBox* bx = myFig3.addChild ( sglBox (0,0,0, 1,1,1, 0.4,0.4,0.8, 0.6) ); // draw a box
+    sglSphere* sph = myFig3.addChild ( sglSphere (0.5,0.5,2, 1.0, 1,0,0) ); // draw a sphere
     
     // -----------------------------------
     std::cout << "press any key." << std::endl; std::cin.get(); // Pause for keyboard input

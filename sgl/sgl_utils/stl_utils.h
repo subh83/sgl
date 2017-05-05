@@ -28,6 +28,48 @@ operator* (double l, const std::vector<double>& r) {
     return (ret);
 }
 
+
+// --------------------------------
+
+template <class T>
+class wrapped_array {
+public:
+    T* data;
+    int size;
+    
+    // constructor & destructor
+    wrapped_array (std::vector<T> invec = std::vector<T>()) {
+        size = invec.size();
+        data = new T[size];
+        for (int a=0; a<size; ++a) data[a] = invec[a];
+    }
+    
+    ~wrapped_array () { delete[] data; }
+    
+    // access value
+    T* operator()(void) { return data; }
+    
+    // deep copy
+    wrapped_array (const wrapped_array& other) {
+        size = other.size;
+        data = new T[size];
+        for (int a=0; a<size; ++a) data[a] = other.data[a];
+    }
+    
+    void operator=(const wrapped_array& source) {
+        if (&source != this) {
+            size = source.size;
+            data = new T[size];
+            for (int a=0; a<size; ++a) data[a] = source.data[a];
+        }
+    }
+};
+
+template <class T>
+wrapped_array<T> vector2array (std::vector<T> invec) {
+    return (wrapped_array<T>(invec));
+}
+
 // ------------------------------------
 
 /*template <class key_type, class value_type>

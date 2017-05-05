@@ -1,5 +1,5 @@
 # Change these if needed or pass as input parameter
-# PREFIX = /usr/local/include
+# PREFIX = /usr/local
 
 # ================================
 
@@ -11,11 +11,11 @@ ifneq ("$(wildcard /usr/local/include/sgl)","")
 else ifneq ("$(wildcard ../sgl)","")
     SGL_FOLDER = ..
 else
-	SGL_FOLDER = $(PREFIX)
+	SGL_FOLDER = $(PREFIX)/include
 endif
 
 INC_SGL = -I$(SGL_FOLDER)
-INC_LOCAL = -I. -Iinclude
+INC_LOCAL = -I.
 
 SGL_INTRO_STRING = "Including SGL from '$(SGL_FOLDER)/'\n"
 

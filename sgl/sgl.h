@@ -33,6 +33,7 @@ SimpleLock<LOCK_RECURSIVE,sglLockStates> sglDrawLock;
 #include "sgl_objects/point.h"
 #include "sgl_objects/line.h"
 #include "sgl_objects/box.h"
+#include "sgl_objects/sphere.h"
 
 // }
 #endif

@@ -12,6 +12,7 @@
 #include "sgl/glt_zpr/zpr.h"
 
 #include "sgl/sgl_utils/stl_utils.h"
+#include "sgl/sgl_utils/gl_properties.h"
 #include "object_base.h"
 
 // --------------------------------------------
@@ -32,9 +33,8 @@ public:
     // non-heritable object properties
     std::string name;
     double width, height;
-    // Properties specific to figure (non-object)
-    bool initiated;
-    int winID;
+    std::vector<sglLight> lights;
+    
     // Status defining variables
     bool waiting_for_keypress; unsigned char pressed_key;
     
@@ -48,6 +48,7 @@ public:
         name = nm;
         width = 600;
         height = 600;
+        lights.resize(1);
         initiated = false;
         winID = -1;
         // --
@@ -77,6 +78,12 @@ public:
     void flush (void);
     // --
     unsigned char get_key (void);
+    
+    
+private:
+    // Properties specific to figure (non-object)
+    bool initiated;
+    int winID;
 };
 
 // ===========================================
@@ -159,10 +166,7 @@ void sglFigure::init (int argc, char *argv[]) {
         glutInitiated = true;
     }
     
-    static GLfloat light_ambient[]  = { 0.0, 0.0, 0.0, 1.0 };
     static GLfloat bright_light_ambient[]  = { 1.0, 1.0, 1.0, 1.0 };
-    static GLfloat light_diffuse[]  = { 0.5, 0.5, 0.5, 1.0 };
-    static GLfloat light_specular[] = { 0.2, 0.2, 0.2, 1.0 };
 
     static GLfloat mat_ambient[]    = { 0.7, 0.7, 0.7, 1.0 };
     static GLfloat mat_diffuse[]    = { 0.8, 0.8, 0.8, 1.0 };
@@ -227,20 +231,12 @@ void sglFigure::init (int argc, char *argv[]) {
 	//zprPickFunc(pick);              /* Pick event client callback   */
 	
 	// Setting up lights
-	
-    // LIGHT0
-    static GLfloat light_position0[] = { 0.0, 0.0, -5.0, 0.0 };
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-	
-	// LIGHT1
-	static GLfloat light_position1[] = { 0.0, 0.0, 5.0, 0.0 };
-	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+	for (int a=0; a<lights.size(); ++a) {
+	    glLightfv (light_names[a], GL_AMBIENT, vector2array(lights[a].ambient)());
+	    glLightfv (light_names[a], GL_DIFFUSE, vector2array(lights[a].diffuse)());
+	    glLightfv (light_names[a], GL_SPECULAR, vector2array(lights[a].specular)());
+	    glLightfv (light_names[a], GL_POSITION, vector2array(lights[a].position)());
+	}
 
 	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -253,8 +249,8 @@ void sglFigure::init (int argc, char *argv[]) {
     //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_ambient);
     
 	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
+	for (int a=0; a<lights.size(); ++a)
+	    glEnable(light_names[a]);
 	
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);

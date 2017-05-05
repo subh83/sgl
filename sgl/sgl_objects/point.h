@@ -1,5 +1,5 @@
-#ifndef _SGL_LINES_H
-#define _SGL_LINES_H
+#ifndef _SGL_POINT_H
+#define _SGL_POINT_H
 
 #include <vector>
 #include <GL/glut.h>

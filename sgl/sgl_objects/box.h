@@ -1,5 +1,5 @@
-#ifndef _SGL_TEMPLATE_H  // TODO: Change name
-#define _SGL_TEMPLATE_H  // TODO: Change name
+#ifndef _SGL_BOX_H  // TODO: Change name
+#define _SGL_BOX_H  // TODO: Change name
 
 #include <GL/glut.h>
 // #include <vector>
