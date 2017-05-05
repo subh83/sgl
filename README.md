@@ -26,13 +26,13 @@
 ```
 
 
-Developers / contributors
---------------------------------------------------------------------------
+Developers / contributors:
+-------------------------
   - Subhrajit Bhattacarya (maintainer): subhrajit@gmail.com
 
 
-Accompanying modules (code included -- see individual code file/folder)
---------------------------------------------------------------------------
+Accompanying modules (code included -- see individual code file/folder):
+-----------------------------------------------------------------------
   - GLT-ZPR
     Zoom-pan-rotate mouse manipulation module for GLUT
     Version 0.4, October 2003
@@ -44,7 +44,7 @@ Accompanying modules (code included -- see individual code file/folder)
 **************************************************************************
 
 Features/Objectives:
---------------------------------------------------------------------------
+-------------------
 
 - Simplify the OpenGL and GLUT interface to make it intuitive like MATLAB.
 - Automatic threading for OpenGL windows and processes.
@@ -63,6 +63,7 @@ Install:
 -------
 - cd to the folder containg this README file
 - Run:
+
     sudo make install
 
 
@@ -125,6 +126,7 @@ Compiling and examples:
 - This library is template-based.
   There is nothing to build. Simply include the file "sgl.h" in your code.
   You can install the headers by running
+  
         sudo make install
 
 - For compiling your program, you'll need to link to the GL, glut and X11
