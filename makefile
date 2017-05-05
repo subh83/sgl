@@ -17,8 +17,8 @@ install:
 	find $(SGL_FOLDER)/sgl -type d -exec chmod 755 {} \;
 	find $(SGL_FOLDER)/sgl -type f -exec chmod 644 {} \;
 
-.PHONY: examples
-examples:
+.PHONY: all
+all:
 	cd examples-sgl && make all
 
 .PHONY: uninstall
