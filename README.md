@@ -53,6 +53,11 @@ Features/Objectives:
 - Easy access & modification to object properties and transformations.
 - Allow easy creation and management of multiple windows.
 
+Dependencies:
+------------
+- OpenGL
+- Boost
+
 TODO:
 - Add more objects to the 'sgl_objects' folder.
   See the '_template.h' file for a template.
@@ -61,12 +66,12 @@ TODO:
 
 Install headers in the system folder and compile example programs:
 -----------------------------------------------------------------
-- cd to the folder containg this README file
-- Run (optional):
+- cd to the folder containing this README file
+- Install headers (optional) by running:
   
         sudo make install
 
-- Run
+- Compile the example programs by running:
   
         make examples
 
