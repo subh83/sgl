@@ -45,17 +45,23 @@ public:
         if (!locked) {
             // try to set lock
             lock_state_capture (locked);
-            if (!locked) // another thread unlocked it in the mean time
-                return (false);
             if (is_lock_state_multiple(locked)) { // simultaniously lock requested by another thread
                 lock_state_release (locked);
                 return (false);
             }
+            if (locked) // sanity check.
+                lock_owner_id = requestor_id;
+            else // another thread unlocked it in the mean time
+                return (false);
             // TODO: Avoid the case where locked==true, but lock_owner_id does not represent any existing thread
-            lock_owner_id = requestor_id;
-            // check if successfully set lock
+            // Final check if successfully set lock
             if (locked  &&  lock_owner_id == requestor_id)
                 return (true);
+            else {
+                if (is_lock_state_multiple(locked))
+                    lock_state_release (locked);
+                return (false);
+            }
         }
         else if (lock_owner_id == requestor_id) { // already locked
             lock_state_capture (locked);
