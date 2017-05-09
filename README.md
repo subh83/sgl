@@ -66,7 +66,7 @@ TODO:
 
 Install headers in the system folder and compile example programs:
 -----------------------------------------------------------------
-- cd to the folder containing this README file
+- `cd` to the folder containing this README file
 - Install headers (optional) by running:
   
         sudo make install
@@ -135,12 +135,11 @@ Compiling and examples:
 - This library is (to a large extent) template-based.
   There is nothing to build. Simply include the file "sgl.h" in your code.
   You can (optionally) install the headers in the system folder by running
-  
-        sudo make install
+  `sudo make install`.
 
 - For compiling your program, you'll need to link to the GL, glut and X11
   libraries. Besides that, you'll need the Boost library.
 
 - Most of the functionalities are intuitive and easy to find from the code.
-  See the 'examples' folder for examples (run 'make examples' to compile).
+  See the 'examples' folder for examples (run `make examples` to compile).
 

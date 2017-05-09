@@ -15,14 +15,16 @@ std::thread::id  get_default_thread_id<std::thread::id> (void) { return (std::th
 typedef bool  LOCK_MONO;
 void lock_state_capture (LOCK_MONO& locked) { locked = true; }
 void lock_state_release (LOCK_MONO& locked) { locked = false; }
+bool is_lock_state_multiple (LOCK_MONO& locked) { return (false); }
 
 typedef unsigned int  LOCK_RECURSIVE;
 void lock_state_capture (LOCK_RECURSIVE& locked) { ++locked; }
-void lock_state_release (LOCK_RECURSIVE& locked) { --locked; }
+void lock_state_release (LOCK_RECURSIVE& locked) { locked=((locked>0)?(locked-1):0); } // { --locked; }
+bool is_lock_state_multiple (LOCK_RECURSIVE& locked) { return (locked>1); }
 
 // =============================================================
 
-template <class LockStateType=LOCK_MONO, class ThreadIDType=std::thread::id>
+template <class LockStateType=LOCK_RECURSIVE, class ThreadIDType=std::thread::id>
 class SimpleLock {
 
 private:
@@ -45,6 +47,10 @@ public:
             lock_state_capture (locked);
             if (!locked) // another thread unlocked it in the mean time
                 return (false);
+            if (is_lock_state_multiple(locked)) { // simultaniously lock requested by another thread
+                lock_state_release (locked);
+                return (false);
+            }
             // TODO: Avoid the case where locked==true, but lock_owner_id does not represent any existing thread
             lock_owner_id = requestor_id;
             // check if successfully set lock
@@ -73,7 +79,7 @@ public:
 
 // --------------------------------------------------------------
 
-template <class LockStateType=LOCK_MONO, class ThreadIDType=std::thread::id>
+template <class LockStateType=LOCK_RECURSIVE, class ThreadIDType=std::thread::id>
 class ActivateSimpleLock {
 
 public:
