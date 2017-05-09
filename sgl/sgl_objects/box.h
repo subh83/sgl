@@ -1,17 +1,15 @@
-#ifndef _SGL_BOX_H  // TODO: Change name
-#define _SGL_BOX_H  // TODO: Change name
+#ifndef _SGL_BOX_H
+#define _SGL_BOX_H
 
 #include <GL/glut.h>
-// #include <vector>
+#include <vector>
 // TODO: Other includes
 
-#include "sgl/sgl_utils/stl_utils.h"
-#include "sgl/sgl_utils/gl_utils.h"
-#include "sgl/sgl_utils/gl_transformation_util.h"
+#include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_utils.h"
+#include "../sgl_utils/gl_transformation_util.h"
 
-#include "sgl/sgl_objects/object_base.h" // Necessary
-// #include "point.h"
-// TODO: include files for other child objects
+#include "object_base.h" // Necessary
 
 int sglBox_TriangleIndices[][3] = 
     {{0,1,3},{2,1,3}, {4,5,7},{6,5,7}, {3,2,7},{6,2,7}, {1,2,5},{6,2,5}, {0,1,4},{5,1,4}, {0,3,4},{7,3,4}};

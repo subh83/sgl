@@ -4,9 +4,10 @@
 #include <vector>
 #include <GL/glut.h>
 
-#include "sgl/sgl_utils/stl_utils.h"
-#include "sgl/sgl_utils/gl_utils.h"
-#include "sgl/sgl_objects/object_base.h"
+#include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_utils.h"
+
+#include "object_base.h"
 
 // --------------------------------------------
 

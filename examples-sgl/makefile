@@ -7,17 +7,21 @@
 # --------------
 
 ifneq ("$(wildcard /usr/local/include/sgl)","")
-    SGL_FOLDER = /usr/local/include
+    SGL_INC_FOLDER = /usr/local/include
+    INC_SGL=
 else ifneq ("$(wildcard ../sgl)","")
-    SGL_FOLDER = ..
+    SGL_INC_FOLDER=..
+    INC_SGL=-I$(SGL_INC_FOLDER)
 else
-	SGL_FOLDER = $(PREFIX)/include
+	SGL_INC_FOLDER = $(PREFIX)/include
+	INC_SGL=-I$(SGL_INC_FOLDER)
 endif
 
-INC_SGL = -I$(SGL_FOLDER)
-INC_LOCAL = -I.
+INC_LOCAL=-I.
 
-SGL_INTRO_STRING = "Including SGL from '$(SGL_FOLDER)/'\n"
+# --------------------------------------------
+
+SGL_INTRO_STRING = "Including SGL from '$(SGL_INC_FOLDER)/'\n"
 
 # --------------------------------------------
 # common flags

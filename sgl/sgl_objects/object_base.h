@@ -6,9 +6,9 @@
 #include <unordered_set>
 #include <functional>
 
-#include "sgl/sgl_utils/stl_utils.h"
-#include "sgl/sgl_utils/gl_transformation_util.h"
-#include "sgl/sgl_utils/simple_lock.h"
+#include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_transformation_util.h"
+#include "../sgl_utils/simple_lock.h"
 
 // ==========================================================
 // Property maps

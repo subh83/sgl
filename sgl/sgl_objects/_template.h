@@ -5,11 +5,11 @@
 // #include <vector>
 // TODO: Other includes
 
-#include "sgl/sgl_utils/stl_utils.h"
-#include "sgl/sgl_utils/gl_utils.h"
-#include "sgl/sgl_utils/gl_transformation_util.h"
+#include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_utils.h"
+#include "../sgl_utils/gl_transformation_util.h"
 
-#include "sgl/sgl_objects/object_base.h" // Necessary
+#include "object_base.h" // Necessary
 // #include "point.h"
 // TODO: include files for other child objects
 

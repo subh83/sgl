@@ -4,12 +4,12 @@
 #include <vector>
 #include <GL/glut.h>
 
-#include "sgl/sgl_utils/stl_utils.h"
-#include "sgl/sgl_utils/gl_utils.h"
-#include "sgl/sgl_utils/gl_transformation_util.h"
+#include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_utils.h"
+#include "../sgl_utils/gl_transformation_util.h"
 
-#include "sgl/sgl_objects/object_base.h"
-#include "sgl/sgl_objects/point.h"
+#include "object_base.h"
+#include "point.h"
 
 class sglLine : public sglObject
 {

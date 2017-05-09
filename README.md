@@ -3,7 +3,7 @@
 *                                                                        *
 *  Simple OpenGL (SGL)                                                   *
 *  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
-*  Version 1.0a                                                          *
+*  Version 1.0b                                                          *
 *  ----------------------------------------------------------            *
 *  Copyright (C) 2017  Subhrajit Bhattacharya                            *
 *                                                                        *
@@ -59,12 +59,16 @@ TODO:
 
 **************************************************************************
 
-Install:
--------
+Install headers in the system folder and compile example programs:
+-----------------------------------------------------------------
 - cd to the folder containg this README file
-- Run:
+- Run (optional):
   
         sudo make install
+
+- Run
+  
+        make examples
 
 
 Basic usage:
@@ -115,7 +119,7 @@ int main(int argc, char *argv[])
 Suggested compilation options:
 -----------------------------
 ```
--std=gnu++11 -O3 -g -w -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
+g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
 ```
 
 **************************************************************************
@@ -123,9 +127,9 @@ Suggested compilation options:
 Compiling and examples:
 ----------------------
 
-- This library is template-based.
+- This library is (to a large extent) template-based.
   There is nothing to build. Simply include the file "sgl.h" in your code.
-  You can install the headers by running
+  You can (optionally) install the headers in the system folder by running
   
         sudo make install
 
@@ -133,5 +137,5 @@ Compiling and examples:
   libraries. Besides that, you'll need the Boost library.
 
 - Most of the functionalities are intuitive and easy to find from the code.
-  See the 'examples' folder for examples (run 'make all' to compile).
+  See the 'examples' folder for examples (run 'make examples' to compile).
 

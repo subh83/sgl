@@ -15,20 +15,23 @@ namespace sgl {
 #endif
 
 // ===============================
+// utils
 
 #include "sgl_utils/simple_lock.h"
 
 typedef enum {SGL_DRAW_LOCK, SGL_MEM_LOCK} sglLockStates;
 SimpleLock<LOCK_RECURSIVE,sglLockStates> sglDrawLock;
 
-// ===============================
-
-// utils
 #include "sgl_utils/stl_utils.h"
 #include "sgl_utils/gl_utils.h"
 #include "sgl_utils/gl_transformation_util.h"
+#include "sgl_utils/gl_properties.h"
 
+// ===============================
 // objects
+#include "sgl_objects/object_base.h"
+#include "sgl_objects/_template.h"
+// --
 #include "sgl_objects/figure.h"
 #include "sgl_objects/point.h"
 #include "sgl_objects/line.h"

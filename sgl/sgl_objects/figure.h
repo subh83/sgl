@@ -9,10 +9,12 @@
 #include <thread>
 #include <chrono>
 
-#include "sgl/glt_zpr/zpr.h"
+// GLT-ZPR
+#include "../glt_zpr/zpr.h"
 
-#include "sgl/sgl_utils/stl_utils.h"
-#include "sgl/sgl_utils/gl_properties.h"
+#include "../sgl_utils/stl_utils.h"
+#include "../sgl_utils/gl_properties.h"
+
 #include "object_base.h"
 
 // --------------------------------------------
