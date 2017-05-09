@@ -19,12 +19,12 @@ bool is_lock_state_multiple (LOCK_MONO& locked) { return (false); }
 
 typedef unsigned int  LOCK_RECURSIVE;
 void lock_state_capture (LOCK_RECURSIVE& locked) { ++locked; }
-void lock_state_release (LOCK_RECURSIVE& locked) { locked=((locked>0)?(locked-1):0); } // { --locked; }
+void lock_state_release (LOCK_RECURSIVE& locked) { locked=((locked>0)?(locked-1):0); }
 bool is_lock_state_multiple (LOCK_RECURSIVE& locked) { return (locked>1); }
 
 // =============================================================
 
-template <class LockStateType=LOCK_RECURSIVE, class ThreadIDType=std::thread::id>
+template <class ThreadIDType=std::thread::id, class LockStateType=LOCK_RECURSIVE>
 class SimpleLock {
 
 private:
@@ -79,11 +79,11 @@ public:
 
 // --------------------------------------------------------------
 
-template <class LockStateType=LOCK_RECURSIVE, class ThreadIDType=std::thread::id>
+template <class ThreadIDType=std::thread::id, class LockStateType=LOCK_RECURSIVE>
 class ActivateSimpleLock {
 
 public:
-    typedef SimpleLock<LockStateType, ThreadIDType>  LockType;
+    typedef SimpleLock<ThreadIDType, LockStateType>  LockType;
     
     ActivateSimpleLock (LockType l, ThreadIDType requestor_id = get_default_thread_id<ThreadIDType>()) 
             : this_lock(l), lock_owner_id(requestor_id)  { this_lock.lock (requestor_id); }

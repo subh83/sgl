@@ -29,7 +29,7 @@ public:
 
 // ==========================================================
 
-#define declare_ModifiesMemberUsedInDrawing   ActivateSimpleLock<LOCK_RECURSIVE,sglLockStates> sgl_obj_fun_lock (sglDrawLock, SGL_MEM_LOCK);
+#define declare_ModifiesMemberUsedInDrawing   ActivateSimpleLock<sglLockStates,LOCK_RECURSIVE> sgl_obj_fun_lock (sglDrawLock, SGL_MEM_LOCK);
 
 // Class without properties. Only for maintaining parent-child relationship
 class sglObjectBase
@@ -199,7 +199,7 @@ LPropertiesMap  sglObjectBase::empty_LP  =  LPropertiesMap();
 
 // --------------------------------------------
 
-#define sgl_draw_function_head      ActivateSimpleLock<LOCK_RECURSIVE,sglLockStates> sgl_obj_fun_lock (sglDrawLock, SGL_DRAW_LOCK); \
+#define sgl_draw_function_head      ActivateSimpleLock<sglLockStates,LOCK_RECURSIVE> sgl_obj_fun_lock (sglDrawLock, SGL_DRAW_LOCK); \
                                     computeProperties (parent_CP, parent_child_LP);
                             // ...
 #define sgl_draw_end    

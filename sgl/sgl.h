@@ -20,7 +20,7 @@ namespace sgl {
 #include "sgl_utils/simple_lock.h"
 
 typedef enum {SGL_DRAW_LOCK, SGL_MEM_LOCK} sglLockStates;
-SimpleLock<LOCK_RECURSIVE,sglLockStates> sglDrawLock;
+SimpleLock<sglLockStates,LOCK_RECURSIVE> sglDrawLock;
 
 #include "sgl_utils/stl_utils.h"
 #include "sgl_utils/gl_utils.h"
