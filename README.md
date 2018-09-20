@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 
 ### Available Objects
 
-For the urrently available objects, see the `sgl/sgl_objects` folder. The constructors of each object should be self-explanatory. The `template_.icc` acts as a guide for creating new objects. More extensive documentation will be created in future.
+For the currently available objects, see the `sgl/sgl_objects` folder. The constructors of each object should be self-explanatory. The `template_.icc` acts as a guide for creating new objects. More extensive documentation will be created in future.
 
 ### Suggested compilation options:
 
