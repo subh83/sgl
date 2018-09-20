@@ -8,25 +8,35 @@
 !/makefile
 !/*.h
 !/*.cpp
+!/*.icc
+!/*.tcc
 
 !sgl/
 !sgl/*.h
 !sgl/*.cpp
+!sgl/*.icc
+!sgl/*.tcc
 
 !sgl/sgl_objects/
 !sgl/sgl_objects/*.h
 !sgl/sgl_objects/*.cpp
+!sgl/sgl_objects/*.icc
+!sgl/sgl_objects/*.tcc
 
 !sgl/sgl_utils/
 !sgl/sgl_utils/*.h
 !sgl/sgl_utils/*.cpp
+!sgl/sgl_utils/*.icc
+!sgl/sgl_utils/*.tcc
 
 !sgl/glt_zpr/
 !sgl/glt_zpr/*.h
 !sgl/glt_zpr/*.c
 
 !examples-sgl/
+!examples-sgl/makefile
 !examples-sgl/*.h
 !examples-sgl/*.cpp
-!examples-sgl/makefile
+!examples-sgl/*.icc
+!examples-sgl/*.tcc
 

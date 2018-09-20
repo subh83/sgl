@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <math.h>
 
-#include "zpr.h"
+#include "zpr.icc"
 
 /* This code was originally C++ :-) */
 

@@ -1,14 +1,39 @@
-#ifndef _SGL_OBJ_BASE_H
-#define _SGL_OBJ_BASE_H
+/**************************************************************************
+ *                                                                        *
+ *  Simple OpenGL (SGL)                                                   *
+ *  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
+ *  Version 1.x                                                           *
+ *  ----------------------------------------------------------            *
+ *  Copyright (C) 2018  Subhrajit Bhattacharya                            *
+ *                                                                        *
+ *  This program is free software: you can redistribute it and/or modify  *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  This program is distributed in the hope that it will be useful,       *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details                           *
+ *  <http://www.gnu.org/licenses/>                                        *
+ *                                                                        *
+ *                                                                        *
+ *  Contact: subhrajit@gmail.com, http://subhrajit.net/                   *
+ *                                                                        *
+ *                                                                        *
+ **************************************************************************/
+
+#ifndef _SGL_OBJ_BASE_ICC
+#define _SGL_OBJ_BASE_ICC
 
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
 
-#include "../sgl_utils/stl_utils.h"
-#include "../sgl_utils/gl_transformation_util.h"
-#include "../sgl_utils/simple_lock.h"
+#include "../sgl_utils/stl_utils.icc"
+#include "../sgl_utils/gl_transformation_util.icc"
+#include "../sgl_utils/simple_lock.icc"
 
 // ==========================================================
 // Property maps

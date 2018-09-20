@@ -1,50 +1,8 @@
-```
-**************************************************************************
-*                                                                        *
-*  Simple OpenGL (SGL)                                                   *
-*  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
-*  Version 1.0b                                                          *
-*  ----------------------------------------------------------            *
-*  Copyright (C) 2017  Subhrajit Bhattacharya                            *
-*                                                                        *
-*  This program is free software: you can redistribute it and/or modify  *
-*  it under the terms of the GNU General Public License as published by  *
-*  the Free Software Foundation, either version 3 of the License, or     *
-*  (at your option) any later version.                                   *
-*                                                                        *
-*  This program is distributed in the hope that it will be useful,       *
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-*  GNU General Public License for more details                           *
-*  <http://www.gnu.org/licenses/>                                        *
-*                                                                        *
-*                                                                        *
-*  Contact: subhrajit@gmail.com, http://subhrajit.net/                   *
-*                                                                        *
-*                                                                        *
-**************************************************************************
-```
-
-
-Developers / contributors:
--------------------------
-  - Subhrajit Bhattacarya (maintainer): subhrajit@gmail.com
-
-
-Accompanying modules (code included -- see individual code file/folder):
------------------------------------------------------------------------
-  - GLT-ZPR
-    Zoom-pan-rotate mouse manipulation module for GLUT
-    Version 0.4, October 2003
-    by Nigel Stewart
-    License: GNU Lesser General Public License
-    Link: http://www.nigels.com/glt/gltzpr/
-
-
-**************************************************************************
-
-Features/Objectives:
+Simple OpenGL (SGL)                                                  
 -------------------
+A simplified, threaded C++ wrapper for OpenGL and GLUT
+
+### Features/Objectives:
 
 - Simplify the OpenGL and GLUT interface to make it intuitive like MATLAB.
 - Automatic threading for OpenGL windows and processes.
@@ -53,19 +11,86 @@ Features/Objectives:
 - Easy access & modification to object properties and transformations.
 - Allow easy creation and management of multiple windows.
 
-Dependencies:
-------------
+### Illustrative Example:
+
+Output screenshot ("crystal_red_dwarf.png"):
+
+<img src="http://subhrajit.net/files/externally-linked-files/images/github-sgl/crystal_red_dwarf.png" width="400"/>
+
+Complete code:
+
+```C++
+#include <iostream>
+#include "sgl/sgl"
+
+#define rand_d (2.0 * ((double)rand()) / ((double)RAND_MAX) - 1.0)  // random number between -1 and 1
+
+int main(int argc, char *argv[])
+{
+    
+    sglFigure myFig; // create sglFigure instance
+    myFig.init (); // Display the figure
+    
+    // draw a sphere
+    myFig.addChild ( sglSphere (0.0,0.0,2.0, 1.0, 1.0,0.2,0.0) );
+    //                      ^^   cx, cy, cz, rad,   r,  g,  b
+    
+    // draw multiple rotated boxes
+    for (int i=0; i<10; ++i) {
+        sglBox* bx = myFig.addChild ( sglBox (rand_d, rand_d, rand_d, // x1,y1,z1
+                                              rand_d, rand_d, rand_d, // x2,y2,z2
+                                              0.4,0.4,0.8, 0.6) );    // r,g,b, alpha
+        bx->addTransformation ( sglRotate(30, rand_d, rand_d, rand_d) );
+                                    // ^^  angle,      x,      y,      z   --  axis-angle representation of rotation
+    }
+    
+    myFig.get_key("press any key to save file.\n"); // Pause for keyboard input
+    myFig.save_as_image("crystal_red_dwarf.png");
+    myFig.get_key("press any key to exit.\n");
+}
+
+
+```
+
+
+
+
+**************************************************************************
+
+### Developers / contributors:
+
+  - Subhrajit Bhattacarya (maintainer): subhrajit@gmail.com
+
+
+### Accompanying modules (code included -- see individual code file/folder):
+
+  - GLT-ZPR:
+    Zoom-pan-rotate mouse manipulation module for GLUT.
+    Version 0.4, October 2003
+    by Nigel Stewart.
+    License: GNU Lesser General Public License.
+    Link: http://www.nigels.com/glt/gltzpr/
+
+
+### Dependencies:
+
 - OpenGL
 - Boost
+- OpenCV
 
 TODO:
 - Add more objects to the 'sgl_objects' folder.
   See the '_template.h' file for a template.
+- Allow user to change light and display settings.
+- Implement textures.
 
 **************************************************************************
 
-Install headers in the system folder and compile example programs:
------------------------------------------------------------------
+Use:
+----
+
+### Install headers in the system folder and compile example programs:
+
 - `cd` to the folder containing this README file
 - Install headers (optional) by running:
   
@@ -76,8 +101,8 @@ Install headers in the system folder and compile example programs:
         make examples
 
 
-Basic usage:
------------
+### Basic usage:
+
 ```C++
 
 #include "sgl/sgl.h"
@@ -121,10 +146,10 @@ int main(int argc, char *argv[])
 
 ```
 
-Suggested compilation options:
------------------------------
+### Suggested compilation options:
+
 ```
-g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
+g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext `pkg-config --cflags --libs --silence-errors opencv` -D__opencv=1
 ```
 
 **************************************************************************
@@ -143,3 +168,33 @@ Compiling and examples:
 - Most of the functionalities are intuitive and easy to find from the code.
   See the 'examples' folder for examples (run `make examples` to compile).
 
+**************************************************************************
+
+License:
+-------
+```
+**************************************************************************
+*                                                                        *
+*  Simple OpenGL (SGL)                                                   *
+*  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
+*  Version 1.1b                                                          *
+*  ----------------------------------------------------------            *
+*  Copyright (C) 2018  Subhrajit Bhattacharya                            *
+*                                                                        *
+*  This program is free software: you can redistribute it and/or modify  *
+*  it under the terms of the GNU General Public License as published by  *
+*  the Free Software Foundation, either version 3 of the License, or     *
+*  (at your option) any later version.                                   *
+*                                                                        *
+*  This program is distributed in the hope that it will be useful,       *
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*  GNU General Public License for more details                           *
+*  <http://www.gnu.org/licenses/>                                        *
+*                                                                        *
+*                                                                        *
+*  Contact: subhrajit@gmail.com, http://subhrajit.net/                   *
+*                                                                        *
+*                                                                        *
+**************************************************************************
+```

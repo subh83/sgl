@@ -6,7 +6,7 @@
 #include <chrono>
 #include <algorithm>
 
-#include "sgl/sgl.h"
+#include "sgl/sgl"
 
 #define rand_d (2.0 * ((double)rand()) / ((double)RAND_MAX) - 1.0)
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     for (int a=0; a<100; ++a)
         chain->addPoint ( sglPoint (0.5*rand_d, 0.5*rand_d, 0.5*rand_d) );
     
-    // Apply a translation (first) and a rotation (second) to this lines object
+    // Apply (initiate) a translation (first) and a rotation (second) to this lines object
     auto chain_translation = chain->addTransformation ( sglTranslate(0.0, 0.0, 0.0) );
     auto chain_rotation = chain->addTransformation ( sglRotate(0.0, 0.0, 0.0, 1.0) );
                                                     // ^^^^  angle,   x,   y,   z

@@ -1,21 +1,53 @@
-#ifndef _SGL_FIGURE_H
-#define _SGL_FIGURE_H
+/**************************************************************************
+ *                                                                        *
+ *  Simple OpenGL (SGL)                                                   *
+ *  A simplified, threaded C++ wrapper for OpenGL and GLUT                *
+ *  Version 1.x                                                           *
+ *  ----------------------------------------------------------            *
+ *  Copyright (C) 2018  Subhrajit Bhattacharya                            *
+ *                                                                        *
+ *  This program is free software: you can redistribute it and/or modify  *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  This program is distributed in the hope that it will be useful,       *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details                           *
+ *  <http://www.gnu.org/licenses/>                                        *
+ *                                                                        *
+ *                                                                        *
+ *  Contact: subhrajit@gmail.com, http://subhrajit.net/                   *
+ *                                                                        *
+ *                                                                        *
+ **************************************************************************/
+
+#ifndef _SGL_FIGURE_ICC
+#define _SGL_FIGURE_ICC
 
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <X11/Xlib.h>
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <thread>
 #include <chrono>
 
+// OpenCV for writing image file
+#if __opencv
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#endif
+
 // GLT-ZPR
-#include "../glt_zpr/zpr.h"
+#include "../glt_zpr/zpr.icc"
 
-#include "../sgl_utils/stl_utils.h"
-#include "../sgl_utils/gl_properties.h"
+#include "../sgl_utils/stl_utils.icc"
+#include "../sgl_utils/gl_properties.icc"
 
-#include "object_base.h"
+#include "object_base.icc"
 
 // --------------------------------------------
 
@@ -78,9 +110,10 @@ public:
     // Functions specific to figure
     void init (int argc=0, char *argv[]=NULL);
     void flush (void);
+    void close (void);
     // --
-    unsigned char get_key (void);
-    
+    unsigned char get_key (std::string msg="");
+    bool save_as_image (const char* fname="image.png");
     
 private:
     // Properties specific to figure (non-object)
@@ -103,6 +136,10 @@ std::unordered_map <int, sglFigure*> allGlFigures;
 // Global gl unctions
 
 void _globalDisplayFunction (void) {
+    // kill thread if no figures to draw
+    if (allGlFigures.size()==0)
+        std::terminate();
+    
     int winID = glutGetWindow();
     
     if (allGlFigures.find(winID) != allGlFigures.end()) {
@@ -114,6 +151,10 @@ void _globalDisplayFunction (void) {
 // --------------------------
 
 void _globalKeyFunction (unsigned char key, int x, int y){
+    // kill thread if no figures to draw
+    if (allGlFigures.size()==0)
+        std::terminate();
+    
     int winID = glutGetWindow();
     
     if (allGlFigures.find(winID) != allGlFigures.end()) {
@@ -158,7 +199,8 @@ sglFigure::~sglFigure () {
 
 // -------------------------------
 
-void sglFigure::init (int argc, char *argv[]) {
+// TODO: Instead of directly calling gl and glut functions in main thread, try registering a call to a '_init' function be called inside the glutMainLoopThread.
+void sglFigure::init (int argc, char *argv[]) { 
     if (initiated) // nothing to initiate
         return;
     
@@ -260,6 +302,7 @@ void sglFigure::init (int argc, char *argv[]) {
 	glEnable(GL_COLOR_MATERIAL);
 	
 	if (!glutMainLoopCalled) { // active
+	    glutSetOption (GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
         glutMainLoopCalled = true;
         glutMainLoopThread = std::thread ( [](void) -> void { glutMainLoop(); } );
     }
@@ -271,6 +314,7 @@ void sglFigure::init (int argc, char *argv[]) {
 
 // -------------------------------
 
+// TODO: Instead of directly calling gl and glut functions in main thread, try registering a call to a '_flush' function be called inside the glutMainLoopThread.
 void sglFigure::flush (void) {
     int oldWinID = glutGetWindow();
     glutSetWindow (winID);
@@ -278,14 +322,46 @@ void sglFigure::flush (void) {
     glutSetWindow (oldWinID);
 }
 
+// TODO: Instead of directly calling gl and glut functions in main thread, try registering a call to a '_close' function be called inside the glutMainLoopThread.
+void sglFigure::close (void) {
+    int oldWinID = glutGetWindow();
+    allGlFigures.erase (winID);
+    glutDestroyWindow (winID);
+    if (allGlFigures.size()!=0 && oldWinID!=winID)
+        glutSetWindow (oldWinID);
+}
+
 // -------------------------------
 
-unsigned char sglFigure::get_key (void) {
+unsigned char sglFigure::get_key (std::string msg) {
+    std::cout << msg;
     waiting_for_keypress = true;
     while (waiting_for_keypress) {
         std::this_thread::sleep_for (std::chrono::milliseconds(100)); // sleep
     }
     return (pressed_key);
+}
+
+// TODO: Instead of directly calling gl and glut functions in main thread, try registering a call to a '_save_as_image' function be called inside the glutMainLoopThread.
+bool sglFigure::save_as_image (const char* fname) {
+#if __opencv
+    cv::Mat image = cv::Mat::zeros(height, width, CV_8UC3);
+    cv::Mat temp;
+    
+    glutSetWindow (winID);
+    GLint buff;
+    //glGetIntegerv(GL_DRAW_BUFFER,&buff);
+    glReadBuffer(GL_FRAMEBUFFER); //((GLenum)buff); //(GL_FRONT_LEFT);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+    
+    cv::cvtColor(image, temp, CV_BGR2RGB); 
+    cv::flip(temp, image, 0);
+    
+    cv::imwrite(fname, temp);
+#else
+    std::cout << "'opencv' was not activated. Use  -D__opencv=1  compilation option to activate." << std::endl;
+    return(false);
+#endif
 }
 
 #endif

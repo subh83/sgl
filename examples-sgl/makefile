@@ -3,6 +3,10 @@
 
 # ================================
 
+# Macros
+# ------
+PACKAGE_CONFIG = $(if $(shell pkg-config --cflags --libs --silence-errors $(1)), `pkg-config --cflags --libs --silence-errors $(1)` -D__$(1)=1, -D__$(1)=0)
+
 # INCLUDE FOLDER
 # --------------
 
@@ -30,14 +34,21 @@ CC = g++
 CFLAGS = -std=gnu++11 -O3 -g 
 WARNS = -w
 
-LIBS = -lm
-LIBS_OPENCV = -lopencv_core -lopencv_highgui -lopencv_imgproc
-LIBS_OPENGL = -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
-LIB_ARMADILLO = -larmadillo
+LIBS := -lm
+LIBS_OPENGL := -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
+LIB_OPENCV := $(call PACKAGE_CONFIG,opencv) -L/usr/local/share/OpenCV/3rdparty/lib/  # the -L option fixes bug with libippicv
+LIB_ARMADILLO := $(call PACKAGE_CONFIG,armadillo)
+LIB_PNG := $(call PACKAGE_CONFIG,libpng)
 
 # --------------------------------------------
-all: example1 example2
+all: example0 example1 example2
 
+
+.PHONY: example0
+example0:
+	@printf "\nNow compiling '$@'...\n"
+	@printf $(SGL_INTRO_STRING)
+	$(CC) $(CFLAGS) $(WARNS) $(INC_LOCAL) $(INC_SGL) -o $@ $@.cpp $(LIBS) $(LIBS_OPENGL) $(LIB_OPENCV)
 
 .PHONY: example1
 example1:
