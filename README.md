@@ -15,9 +15,9 @@ A simplified, threaded C++ wrapper for OpenGL and GLUT
 
 Output screenshot ("crystal_red_dwarf.png"):
 
-<img src="http://subhrajit.net/files/externally-linked-files/images/github-sgl/crystal_red_dwarf.png" width="400"/>
+<img src="http://subhrajit.net/files/externally-linked-files/images/github-sgl/crystal_red_dwarf.png" width="400" style="border:solid 2px #eee"/>
 
-Complete code:
+Complete code generating the above:
 
 ```C++
 #include <iostream>
@@ -74,9 +74,9 @@ int main(int argc, char *argv[])
 
 ### Dependencies:
 
-- OpenGL
+- OpenGL, GLUT
 - Boost
-- OpenCV
+- OpenCV (optional - for saving screenshots)
 
 TODO:
 - Add more objects to the 'sgl_objects' folder.
@@ -143,11 +143,20 @@ int main(int argc, char *argv[])
     
     // ...
 }
-
 ```
+
+### Available Objects
+
+For the urrently available objects, see the `sgl/sgl_objects` folder. The constructors of each object should be self-explanatory. The `template_.icc` acts as a guide for creating new objects. More extensive documentation will be created in future.
 
 ### Suggested compilation options:
 
+Without OpenCV:
+```
+g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
+```
+
+With OpenCV:
 ```
 g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext `pkg-config --cflags --libs --silence-errors opencv` -D__opencv=1
 ```
