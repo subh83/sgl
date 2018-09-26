@@ -5,7 +5,7 @@
 
 # Macros
 # ------
-PACKAGE_CONFIG = $(if $(shell pkg-config --cflags --libs --silence-errors $(1)), `pkg-config --cflags --libs --silence-errors $(1)` -D__$(1)=1, -D__$(1)=0)
+PACKAGE_CONFIG = $(if $(shell pkg-config --cflags --libs --silence-errors $(1)), `pkg-config --cflags --libs $(1)` -D__$(1)=1, -D__$(1)=0)
 
 # INCLUDE FOLDER
 # --------------
@@ -35,7 +35,7 @@ CFLAGS = -std=gnu++11 -O3 -g
 WARNS = -w
 
 LIBS := -lm
-LIBS_OPENGL := -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
+LIBS_OPENGL := `pkg-config --cflags --libs x11 xi gl glu` -lglut
 LIB_OPENCV := $(call PACKAGE_CONFIG,opencv) -L/usr/local/share/OpenCV/3rdparty/lib/  # the -L option fixes bug with libippicv
 LIB_ARMADILLO := $(call PACKAGE_CONFIG,armadillo)
 LIB_PNG := $(call PACKAGE_CONFIG,libpng)

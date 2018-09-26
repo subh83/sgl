@@ -151,13 +151,15 @@ For the currently available objects, see the `sgl/sgl_objects` folder. The const
 
 Without OpenCV:
 ```
-g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext
+g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut `pkg-config --cflags --libs x11 xi gl glu`
 ```
 
 With OpenCV:
 ```
-g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut -lGLU -lGL -lXi -lXmu -lX11 -lXext `pkg-config --cflags --libs --silence-errors opencv` -D__opencv=1
+g++ -std=gnu++11 -O3 -g -o <program> <program>.cpp -lm -lglut `pkg-config --cflags --libs x11 xi gl glu opencv` -D__opencv=1
 ```
+(note that the `-D__opencv=1` flag is necessary in order to instruct sgl to use the OpenGL library)
+
 
 **************************************************************************
 
