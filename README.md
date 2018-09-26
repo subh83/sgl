@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
                                               rand_d, rand_d, rand_d,  // x2,y2,z2
                                               0.4,0.4,0.8, 0.6) );     // r,g,b, alpha
         bx->addTransformation ( sglRotate (30, rand_d, rand_d, rand_d) );
-        //                         ^^   angle,      x,      y,      z   (axis-angle representation of rotation)
+        //                         ^^   angle,      x,      y,      z   (angle and axis of rotation)
     }
     
     myFig.get_key("press any key to save file.\n");  // Pause for keyboard input
@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 
 ```
 
-Output screenshot ("crystal_red_dwarf.png"):
+
+**Output screenshot ("crystal_red_dwarf.png"):**
 
 <img src="http://subhrajit.net/files/externally-linked-files/images/github-sgl/crystal_red_dwarf.png" width="400" style="border:solid 2px #eee"/>
 
