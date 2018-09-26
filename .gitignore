@@ -32,6 +32,10 @@
 !sgl/glt_zpr/
 !sgl/glt_zpr/*.h
 !sgl/glt_zpr/*.c
+!sgl/glt_zpr/*.cpp
+!sgl/glt_zpr/*.icc
+!sgl/glt_zpr/*.tcc
+!sgl/glt_zpr/README.txt
 
 !examples-sgl/
 !examples-sgl/makefile
