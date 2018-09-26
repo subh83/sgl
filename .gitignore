@@ -12,6 +12,7 @@
 !/*.tcc
 
 !sgl/
+!sgl/sgl
 !sgl/*.h
 !sgl/*.cpp
 !sgl/*.icc
