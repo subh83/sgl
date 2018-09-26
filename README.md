@@ -103,7 +103,7 @@ Use:
 
 ```C++
 
-#include "sgl/sgl.h"
+#include "sgl/sgl"
 // ...
 
 int main(int argc, char *argv[])
@@ -167,7 +167,7 @@ Compiling and examples:
 ----------------------
 
 - This library is (to a large extent) template-based.
-  There is nothing to build. Simply include the file "sgl.h" in your code.
+  There is nothing to build. Simply include the file "sgl/sgl" in your code.
   You can (optionally) install the headers in the system folder by running
   `sudo make install`.
 
