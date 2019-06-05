@@ -26,6 +26,13 @@
 #ifndef _SGL_FIGURE_ICC
 #define _SGL_FIGURE_ICC
 
+// OpenCV for writing image file
+#if __opencv
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#endif
+
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -34,12 +41,6 @@
 #include <thread>
 #include <chrono>
 
-// OpenCV for writing image file
-#if __opencv
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#endif
 
 // GLT-ZPR
 #include "../glt_zpr/zpr.icc"
@@ -130,12 +131,12 @@ std::thread sglFigure::glutMainLoopThread;
 
 // ------------------------------------------
 
-std::unordered_map <int, sglFigure*> allGlFigures;
+static std::unordered_map <int, sglFigure*> allGlFigures;
 
 // ===========================================
 // Global gl unctions
 
-void _globalDisplayFunction (void) {
+inline void _globalDisplayFunction (void) {
     // kill thread if no figures to draw
     if (allGlFigures.size()==0)
         std::terminate();
@@ -150,7 +151,7 @@ void _globalDisplayFunction (void) {
 
 // --------------------------
 
-void _globalKeyFunction (unsigned char key, int x, int y){
+inline void _globalKeyFunction (unsigned char key, int x, int y){
     // kill thread if no figures to draw
     if (allGlFigures.size()==0)
         std::terminate();

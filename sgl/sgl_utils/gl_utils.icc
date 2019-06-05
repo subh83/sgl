@@ -29,7 +29,7 @@
 #include <vector>
 #include <GL/freeglut.h>
 
-void glColor (std::vector<double> color, double alpha) {
+inline void glColor (std::vector<double> color, double alpha) {
     if (alpha >= 0.0) 
         glColor4f (color[0], color[1], color[2], alpha);
     else 

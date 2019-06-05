@@ -38,14 +38,14 @@ std::thread::id  get_default_thread_id<std::thread::id> (void) { return (std::th
 // --------------------------------------------------------------
 
 typedef bool  LOCK_MONO;
-void lock_state_capture (LOCK_MONO& locked) { locked = true; }
-void lock_state_release (LOCK_MONO& locked) { locked = false; }
-bool is_lock_state_multiple (LOCK_MONO& locked) { return (false); }
+inline void lock_state_capture (LOCK_MONO& locked) { locked = true; }
+inline void lock_state_release (LOCK_MONO& locked) { locked = false; }
+inline bool is_lock_state_multiple (LOCK_MONO& locked) { return (false); }
 
 typedef unsigned int  LOCK_RECURSIVE;
-void lock_state_capture (LOCK_RECURSIVE& locked) { ++locked; }
-void lock_state_release (LOCK_RECURSIVE& locked) { locked=((locked>0)?(locked-1):0); }
-bool is_lock_state_multiple (LOCK_RECURSIVE& locked) { return (locked>1); }
+inline void lock_state_capture (LOCK_RECURSIVE& locked) { ++locked; }
+inline void lock_state_release (LOCK_RECURSIVE& locked) { locked=((locked>0)?(locked-1):0); }
+inline bool is_lock_state_multiple (LOCK_RECURSIVE& locked) { return (locked>1); }
 
 // =============================================================
 

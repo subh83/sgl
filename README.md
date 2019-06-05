@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
 
 ### Dependencies:
 
-- OpenGL, GLUT
+- OpenGL, freeGLUT
+- Xorg X server, X11 misc extensions, libXi
 - Boost
 - OpenCV (optional - for saving screenshots)
 

@@ -31,13 +31,13 @@
 #define MIN(x,y) (((x)<(y))?(x):(y))
 #define MAX(x,y) (((x)<(y))?(y):(x))
 
-std::vector<double> sglMake3vec (const double& r, const double& g, const double& b) {
+inline std::vector<double> sglMake3vec (const double& r, const double& g, const double& b) {
     std::vector<double> ret(3);
     ret[0] = r; ret[1] = g; ret[2] = b;
     return (ret);
 }
 
-std::vector<double>
+inline std::vector<double>
 operator+ (const std::vector<double>& l, const std::vector<double>& r) {
     std::vector<double> ret = l;
     for (int a=0; a<l.size(); ++a)
@@ -45,7 +45,7 @@ operator+ (const std::vector<double>& l, const std::vector<double>& r) {
     return (ret);
 }
 
-std::vector<double>
+inline std::vector<double>
 operator* (double l, const std::vector<double>& r) {
     std::vector<double> ret = r;
     for (int a=0; a<r.size(); ++a)

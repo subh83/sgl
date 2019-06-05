@@ -30,7 +30,7 @@
 #include <GL/freeglut.h>
 
 
-std::vector<GLenum> light_names = {GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3, GL_LIGHT4, GL_LIGHT5};
+static std::vector<GLenum> light_names = {GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3, GL_LIGHT4, GL_LIGHT5};
 
 class sglLight {
 public:

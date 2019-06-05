@@ -17,8 +17,8 @@ else ifneq ("$(wildcard ../sgl)","")
     SGL_INC_FOLDER=..
     INC_SGL=-I$(SGL_INC_FOLDER)
 else
-	SGL_INC_FOLDER = $(PREFIX)/include
-	INC_SGL=-I$(SGL_INC_FOLDER)
+    SGL_INC_FOLDER = $(PREFIX)/include
+    INC_SGL=-I$(SGL_INC_FOLDER)
 endif
 
 INC_LOCAL=-I.
@@ -34,7 +34,7 @@ CC = g++
 CFLAGS = -std=gnu++11 -O3 -g 
 WARNS = -w
 
-LIBS := -lm
+LIBS := -lm -pthread
 LIBS_OPENGL := `pkg-config --cflags --libs x11 xi gl glu` -lglut
 LIB_OPENCV := $(call PACKAGE_CONFIG,opencv) -L/usr/local/share/OpenCV/3rdparty/lib/  # the -L option fixes bug with libippicv
 LIB_ARMADILLO := $(call PACKAGE_CONFIG,armadillo)
